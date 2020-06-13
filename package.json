@@ -7,17 +7,13 @@
     "format": "eslint --fix \"*.js\" \"./src/**/*.js\" || exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "lint-staged": {
-    "linters": {
-      "*.js": [
-        "eslint",
-        "git add"
-      ],
-      "**/*.js": [
-        "eslint",
-        "git add"
-      ]
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format"
     }
+  },
+  "lint-staged": {
+    "*": "npm run format"
   },
   "keywords": [],
   "author": "Imanol Romera",
