@@ -2,9 +2,10 @@ module.exports = (sequelize, DataTypes) => {
   const List = sequelize.define(
     'List',
     {
-      creatorId: DataTypes.INTEGER,
-      associateId: DataTypes.INTEGER,
-      publicChatId: DataTypes.INTEGER,
+      creatorId: DataTypes.BIGINT,
+      associateId: DataTypes.BIGINT,
+      publicChatId: DataTypes.BIGINT,
+      publicMessageId: DataTypes.BIGINT,
       language: DataTypes.STRING(4),
       island: DataTypes.STRING,
       price: DataTypes.INTEGER(4),

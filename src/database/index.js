@@ -13,10 +13,10 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 
 sequelize.authenticate().then(
   () => {
-    process.stdout.write('Database connected');
+    process.stdout.write('Database connected\n');
   },
   () => {
-    process.stdout.write('Database not connected, halting');
+    process.stdout.write('Database not connected, halting\n');
     process.exit(1);
   },
 );

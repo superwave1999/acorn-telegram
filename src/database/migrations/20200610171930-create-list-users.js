@@ -4,11 +4,11 @@ module.exports = {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
     },
     listId: {
       allowNull: false,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
       onDelete: 'CASCADE',
       references: {
         model: 'Lists',
@@ -17,7 +17,7 @@ module.exports = {
     },
     userId: {
       allowNull: false,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
     },
     username: {
       allowNull: false,

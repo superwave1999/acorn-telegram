@@ -1,27 +1,16 @@
 const ListView = require('../views/ListView');
-const ListUser = require('../database/models/listuser');
 
 class ListContext {
   constructor(bot, db) {
-    this.__DEFAULT_MAX_USERS = 50;
-    this.__STATE_ISLAND = 0;
-    this.__STATE_PRICE = 1;
-    this.__STATE_READY = 2;
-    this.__STATE_MAX_USERS = 3;
-    this.__STR_LANG = 'en';
     this.db = db;
-    bot.command('get', (ctx) => {
-      this.contextCommon(ctx) && this.baseCommand(ctx);
+    bot.mention(bot.options.username, (ctx) => {
+      if (ctx.message.text === `@${bot.options.username} get` && this.contextCommon(ctx)) {
+        this.baseCommand(ctx);
+      }
     });
-    bot.action('add_users', (ctx) => {
-      this.contextCommon(ctx) && this.actionAddUser(ctx);
-    });
-    bot.action('complete_user', (ctx) => {
-      this.contextCommon(ctx) && this.actionComplete(ctx);
-    });
-    bot.action('delete_list', (ctx) => {
-      this.contextCommon(ctx) && this.actionDelete(ctx);
-    });
+    bot.action('add_user', (ctx) => this.contextCommon(ctx) && this.actionAddUser(ctx));
+    bot.action('complete_user', (ctx) => this.contextCommon(ctx) && this.actionCompleteUser(ctx));
+    // bot.action('delete_list', (ctx) => this.contextCommon(ctx) && this.actionDelete(ctx));
     return bot;
   }
 
@@ -29,192 +18,102 @@ class ListContext {
    * Technically middleware. Creation must be done in private.
    */
   contextCommon(ctx) {
-    if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
-      return true;
-    }
-    ctx.reply('This command is used in groups!');
-    return false;
+    return (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup');
   }
 
   /**
-   * Print the latest listing in a group.
-   * @param ctx
+   * Base query for this context.
    */
-  baseCommand(ctx) {
+  async getQuery(where = {}, withUsers = true, onlyQueued = true) {
+    where.isClosed = false;
     const query = {
-      where: {
-        creatorId: ctx.from.id,
-        state: 2, // STATE_READY
-        isClosed: false,
-        publicChatId: null,
-      },
-      include: [this.db.ListUser],
+      where,
       order: [['createdAt', 'DESC']],
     };
-    this.db.List.findOne(query).then((q) => {
-      if (q !== null) {
-        this.sendStateMessage(q[0], ctx);
+    if (withUsers) {
+      // Only display users that are still in the queue
+      const userInclude = { model: this.db.ListUser, order: [['createdAt', 'ASC']] };
+      if (onlyQueued) {
+        userInclude.where = { finished: false };
       }
-    });
-  }
-
-  /**
-   * Handles written messages.
-   * @param ctx
-   */
-  messageHandler(ctx) {
-    // User and chat match if private convo
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        this.handleMessageState(q, ctx);
-      }
-    });
-  }
-
-  /**
-   * Send message by state type. Returns promise.
-   * @param q
-   * @param ctx
-   * @returns {null}
-   */
-  sendStateMessage(q, ctx) {
-    let toReturn = null;
-    switch (q.state) {
-      case this.__STATE_ISLAND:
-        toReturn = ctx.reply('Creation menu.\n(1/3) Send me the name of your island!');
-        break;
-      case this.__STATE_PRICE:
-        toReturn = ctx.reply('(2/3) Now, please give me the price.');
-        break;
-      case this.__STATE_READY || this.__STATE_MAX_USERS:
-        const nextStep = '(3/3) If finished, forward this message to a group!\nYou can also configure additional settings:';
-        const markup = {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: `User limit (current: ${q.maxUsers})`,
-                  callback_data: 'set_max_users',
-                },
-              ],
-              [{ text: 'Preview', callback_data: 'preview_creation' }],
-              [{ text: 'Cancel', callback_data: 'cancel_creation' }],
-            ],
-          },
-        };
-        toReturn = ctx.reply(nextStep, markup);
-        break;
-      case this.__STATE_MAX_USERS:
-        toReturn = ctx.reply('Give me the user limit (inclusive).');
-        break;
+      query.include = [userInclude];
     }
-    return toReturn;
+    return this.db.List.findOne(query);
   }
 
   /**
-   * Read message and store depending on status.
-   * @param q
+   * Print the created listing in a group.
    * @param ctx
    */
-  handleMessageState(q, ctx) {
-    const expectedMessage = ctx.message.text;
-    switch (q.state) {
-      case this.__STATE_ISLAND:
-        q.island = expectedMessage;
-        q.state = this.__STATE_PRICE;
-        q.save().then((q2) => {
-          this.sendStateMessage(q2, ctx);
-        });
-        break;
-      case this.__STATE_PRICE:
-        if (/^\d+$/.test(expectedMessage)) {
-          q.price = expectedMessage;
-          q.state = this.__STATE_READY;
-          q.save().then((q2) => {
-            this.sendStateMessage(q2, ctx).then((ctx) => {
-              q.privateMessageId = ctx.message_id;
-              q.save();
-            });
-          });
-        } else {
-          ctx.reply('Please provide a number');
-        }
-        break;
-      case this.__STATE_MAX_USERS:
-        if (/^\d+$/.test(expectedMessage)) {
-          q.maxUsers = expectedMessage;
-          q.state = this.__STATE_READY;
-          q.save().then((q2) => {
-            this.sendStateMessage(q2, ctx);
-          });
-        } else {
-          ctx.reply('Please provide a number');
-        }
-        break;
+  async baseCommand(ctx) {
+    ctx.deleteMessage(ctx.chat.id, ctx.message.message_id);
+    const list = await this.getQuery({
+      creatorId: ctx.from.id, publicChatId: null, publicMessageId: null,
+    });
+    if (list !== null) {
+      const view = new ListView(list);
+      ctx.reply(view.render(), { parse_mode: 'markdown', reply_markup: view.markup() }).then((ctx2) => {
+        list.publicChatId = ctx2.chat.id;
+        list.publicMessageId = ctx2.message_id;
+        list.save();
+      });
     }
   }
 
   /**
-   * Set table row as expecting max user.
+   * Add user to list. Only if list exists and not already on.
    * @param ctx
+   * @returns {Promise<void>}
    */
-  actionSetMaxUsers(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        q.state = this.__STATE_MAX_USERS;
-        q.save().then((q2) => {
-          this.sendStateMessage(q2, ctx);
+  async actionAddUser(ctx) {
+    // TODO: User limit control.
+    const list = await this.getQuery({
+      publicChatId: ctx.chat.id,
+      publicMessageId: ctx.update.callback_query.message.message_id,
+    }, true, false);
+    if (list !== null) {
+      const alreadyAdded = list.ListUsers.some((value) => value.userId === ctx.from.id);
+      if (!alreadyAdded) {
+        const created = await this.db.ListUser.create({
+          finished: false,
+          username: ctx.from.username,
+          userId: ctx.from.id,
+          listId: list.id,
         });
+        if (created) {
+          list.ListUsers.push(created);
+          const view = new ListView(list);
+          await ctx.editMessageText(view.render(), { parse_mode: 'markdown', reply_markup: view.markup() });
+        }
       }
-    });
+    }
   }
 
   /**
-   * Preview the final message.
+   * Mark user as complete.
    * @param ctx
+   * @returns {Promise<void>}
    */
-  actionPreview(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    const include = [this.db.ListUser];
-    this.getQuery(where, include).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        const message = new Preview(q).render();
-        ctx.replyWithMarkdown(message);
+  async actionCompleteUser(ctx) {
+    // TODO: Future checks
+    const list = await this.getQuery({
+      publicChatId: ctx.chat.id,
+      publicMessageId: ctx.update.callback_query.message.message_id,
+    }, true, true);
+    if (list !== null) {
+      const index = list.ListUsers.findIndex((value) => value.userId === ctx.from.id);
+      if (index >= 0) {
+        list.ListUsers[index].finished = true; // Mark complete
+        list.ListUsers[index].save(); // Async save in database
+        list.ListUsers.splice(index, 1); // Remove from list
+        const view = new ListView(list);
+        try {
+          ctx.editMessageText(view.render(), { parse_mode: 'markdown', reply_markup: view.markup() });
+        } catch (e) {
+          process.stdout.write(e.message);
+        }
       }
-    });
-  }
-
-  /**
-   * Cancel the creation process.
-   * @param ctx
-   */
-  actionCancel(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q !== null) {
-        q.destroy().then((q) => {
-          ctx.reply('Cancelled!');
-        });
-      } else {
-        ctx.reply('Nothing to cancel!');
-      }
-    });
+    }
   }
 }
 

@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => sequelize.define(
   'ListUser',
   {
-    listId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
+    listId: DataTypes.BIGINT,
+    userId: DataTypes.BIGINT,
     username: DataTypes.STRING,
     finished: DataTypes.BOOLEAN,
   },

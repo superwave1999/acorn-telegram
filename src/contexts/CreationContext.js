@@ -9,23 +9,13 @@ class CreationContext {
     this.STATE_MAX_USERS = 3;
     this.STR_LANG = 'en';
     this.db = db;
-    bot.command('create', (ctx) => this.contextCommon(ctx) && this.baseCommand(ctx));
-    bot.action('set_max_users', (ctx) => this.contextCommon(ctx) && this.actionSetMaxUsers(ctx));
-    bot.action('preview_creation', (ctx) => this.contextCommon(ctx) && this.actionPreview(ctx));
-    bot.action('cancel_creation', (ctx) => this.contextCommon(ctx) && this.actionCancel(ctx));
-    bot.on('text', (ctx) => this.contextCommon(ctx) && this.messageHandler(ctx));
+    bot.command('create', (ctx) => this.baseCommand(ctx));
+    bot.action('set_max_users', (ctx) => this.actionSetMaxUsers(ctx));
+    bot.action('preview_creation', (ctx) => this.actionPreview(ctx));
+    bot.action('cancel_creation', (ctx) => this.actionCancel(ctx));
+    // TODO: How to avoid listening to groups
+    // bot.on('text', (ctx) => this.messageHandler(ctx));
     return bot;
-  }
-
-  /**
-   * Technically middleware. Creation must be done in private.
-   */
-  contextCommon(ctx) {
-    if (ctx.chat.type === 'private') {
-      return true;
-    }
-    ctx.reply('Talk to me in private!');
-    return false;
   }
 
   /**
@@ -100,10 +90,13 @@ class CreationContext {
         toReturn = ctx.reply('(2/3) Now, please give me the price.');
         break;
       case this.STATE_READY || this.STATE_MAX_USERS:
-        nextStep = '(3/3) If finished, run /get in a group!\nYou can also configure additional settings:';
+        nextStep = '(3/3) List created!\nYou can also do the following:';
         markup = {
           reply_markup: {
             inline_keyboard: [
+              [
+                { text: 'Send to group', switch_inline_query: 'get' },
+              ],
               [
                 { text: `User limit (current: ${q.maxUsers})`, callback_data: 'set_max_users' },
               ],

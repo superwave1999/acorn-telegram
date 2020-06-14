@@ -4,19 +4,23 @@ module.exports = {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
     },
     creatorId: {
       allowNull: false,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
     },
     associateId: {
       allowNull: true,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
     },
     publicChatId: {
       allowNull: true,
-      type: Sequelize.INTEGER,
+      type: Sequelize.BIGINT,
+    },
+    publicMessageId: {
+      allowNull: true,
+      type: Sequelize.BIGINT,
     },
     language: {
       allowNull: false,

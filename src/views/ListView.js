@@ -1,6 +1,6 @@
 const defaultTitle = '🌰 *Trade listing*';
-const msgPrice = '💰: ';
-const msgIsland = '🏝️: ';
+const msgPrice = '💰 ';
+const msgIsland = '🏝️ ';
 
 class ListView {
   constructor(data) {
@@ -31,8 +31,22 @@ class ListView {
       order += 1;
       const user = this.data.ListUsers[key];
       output += `${order}. [@${user.username}](tg://user?id=${user.userId})\n`;
-      return output;
     });
+    return output;
+  }
+
+  /**
+   * Main listing markup buttons.
+   */
+  markup() {
+    return {
+      inline_keyboard: [
+        [{ text: 'I\'m going', callback_data: 'add_user' }],
+        [{ text: 'Finished', callback_data: 'complete_user' }],
+        [{ text: 'Manage users', callback_data: 'manage_users' }],
+        [{ text: 'Cancel', callback_data: 'cancel_creation' }],
+      ],
+    };
   }
 }
 
