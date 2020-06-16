@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       language: DataTypes.STRING(4),
       island: DataTypes.STRING,
       price: DataTypes.INTEGER(4),
+      notification: DataTypes.INTEGER(4),
       maxUsers: DataTypes.INTEGER(4),
       countUsers: DataTypes.INTEGER(4),
       state: DataTypes.INTEGER(1),

@@ -27,7 +27,7 @@ class InitContext {
    * Tutorial.
    */
   helpCommand(ctx) {
-    ctx.reply('1. /create your listing\n2. Send your island name\n3. Send your price\n4. (Optional) Set max users in queue\n5. In a group, run the /get command');
+    ctx.reply('1. /create your listing\n2. Send your island name\n3. Send your price\n4. (Optional) Set max users and notification setting on list\n5. Send it to a group');
   }
 }
 

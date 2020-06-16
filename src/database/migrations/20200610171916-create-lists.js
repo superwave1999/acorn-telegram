@@ -34,6 +34,11 @@ module.exports = {
       allowNull: true,
       type: Sequelize.INTEGER(4),
     },
+    notification: {
+      allowNull: false,
+      type: Sequelize.INTEGER(4),
+      defaultValue: 4,
+    },
     maxUsers: {
       allowNull: false,
       type: Sequelize.INTEGER(4),

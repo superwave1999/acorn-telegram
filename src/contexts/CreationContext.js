@@ -1,17 +1,17 @@
-const Preview = require('../views/ListView');
+const Preview = require('../views/PreviewView');
+const CreationRepository = require('../database/queries/creation');
 
 class CreationContext {
   constructor(bot, db) {
-    this.DEFAULT_MAX_USERS = 50;
+    this.queries = new CreationRepository(db);
     this.STATE_ISLAND = 0;
     this.STATE_PRICE = 1;
     this.STATE_READY = 2;
     this.STATE_MAX_USERS = 3;
-    this.STR_LANG = 'en';
-    this.db = db;
+    this.STATE_SET_NOTIFICATION = 4;
     bot.command('create', (ctx) => this.baseCommand(ctx));
     bot.action('set_max_users', (ctx) => this.actionSetMaxUsers(ctx));
-    bot.action('preview_creation', (ctx) => this.actionPreview(ctx));
+    bot.action('set_notification', (ctx) => this.actionSetNotification(ctx));
     bot.action('cancel_creation', (ctx) => this.actionCancel(ctx));
     // TODO: How to avoid listening to groups
     // bot.on('text', (ctx) => this.messageHandler(ctx));
@@ -19,57 +19,27 @@ class CreationContext {
   }
 
   /**
-   * Get the currently active listing.
-   */
-  getQuery(where = {}, include = null) {
-    where.isClosed = false;
-    where.publicChatId = null;
-    const query = {
-      where,
-      order: [['createdAt', 'DESC']],
-    };
-    if (include) {
-      query.include = include;
-    }
-    return this.db.List.findOne(query);
-  }
-
-  /**
    * Command that starts this context.
    * @param ctx
    */
-  baseCommand(ctx) {
-    const insert = {
-      creatorId: ctx.from.id,
-      language: ctx.from.language_code,
-      state: this.STATE_ISLAND,
-      maxUsers: this.DEFAULT_MAX_USERS,
-      isClosed: false,
-      publicChatId: null,
-    };
-    this.db.List.findOrCreate({ where: insert }).then((q) => {
-      if (q !== null) {
-        this.sendStateMessage(q[0], ctx);
-      }
-    });
+  async baseCommand(ctx) {
+    const created = await this.queries.createList(ctx.from);
+    if (created.length > 0) {
+      this.sendStateMessage(created[0], ctx);
+    }
   }
 
   /**
    * Handles written messages.
    * @param ctx
    */
-  messageHandler(ctx) {
-    // User and chat match if private convo
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        this.handleMessageState(q, ctx);
-      }
-    });
+  async messageHandler(ctx) {
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list == null) {
+      ctx.reply('Execute /create first!');
+    } else {
+      this.handleMessageState(list, ctx);
+    }
   }
 
   /**
@@ -79,45 +49,25 @@ class CreationContext {
    * @returns {null}
    */
   sendStateMessage(q, ctx) {
-    let toReturn = null;
-    let nextStep = null;
-    let markup = null;
     switch (q.state) {
       case this.STATE_ISLAND:
-        toReturn = ctx.reply('Creation menu.\n(1/3) Send me the name of your island!');
+        ctx.reply('Creation menu.\n(1/3) Send me the name of your island!');
         break;
       case this.STATE_PRICE:
-        toReturn = ctx.reply('(2/3) Now, please give me the price.');
+        ctx.reply('(2/3) Now, please give me the price.');
         break;
       case this.STATE_READY || this.STATE_MAX_USERS:
-        nextStep = '(3/3) List created!\nYou can also do the following:';
-        markup = {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: 'Send to group', switch_inline_query: 'get' },
-              ],
-              [
-                { text: `User limit (current: ${q.maxUsers})`, callback_data: 'set_max_users' },
-              ],
-              [
-                { text: 'Preview', callback_data: 'preview_creation' },
-              ],
-              [
-                { text: 'Cancel', callback_data: 'cancel_creation' },
-              ],
-            ],
-          },
-        };
-        toReturn = ctx.reply(nextStep, markup);
+        new Preview(q).sendPreview(ctx);
         break;
       case this.STATE_MAX_USERS:
-        toReturn = ctx.reply('Give me the user limit (inclusive).');
+        ctx.reply('Give me the user limit (inclusive).');
+        break;
+      case this.STATE_SET_NOTIFICATION:
+        ctx.reply('Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).');
         break;
       default:
         break;
     }
-    return toReturn;
   }
 
   /**
@@ -125,26 +75,22 @@ class CreationContext {
    * @param q
    * @param ctx
    */
-  handleMessageState(q, ctx) {
+  async handleMessageState(q, ctx) {
     const expectedMessage = ctx.message.text;
+    let q2 = null;
     switch (q.state) {
       case this.STATE_ISLAND:
         q.island = expectedMessage;
         q.state = this.STATE_PRICE;
-        q.save().then((q2) => {
-          this.sendStateMessage(q2, ctx);
-        });
+        q2 = await q.save();
+        this.sendStateMessage(q2, ctx);
         break;
       case this.STATE_PRICE:
         if (/^\d+$/.test(expectedMessage)) {
           q.price = expectedMessage;
           q.state = this.STATE_READY;
-          q.save().then((q2) => {
-            this.sendStateMessage(q2, ctx).then((ctx2) => {
-              q.privateMessageId = ctx2.message_id;
-              q.save();
-            });
-          });
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
         } else {
           ctx.reply('Please provide a number');
         }
@@ -153,9 +99,18 @@ class CreationContext {
         if (/^\d+$/.test(expectedMessage)) {
           q.maxUsers = expectedMessage;
           q.state = this.STATE_READY;
-          q.save().then((q2) => {
-            this.sendStateMessage(q2, ctx);
-          });
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
+        } else {
+          ctx.reply('Please provide a number');
+        }
+        break;
+      case this.STATE_SET_NOTIFICATION:
+        if (/^\d+$/.test(expectedMessage)) {
+          q.notification = expectedMessage;
+          q.state = this.STATE_READY;
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
         } else {
           ctx.reply('Please provide a number');
         }
@@ -169,58 +124,44 @@ class CreationContext {
    * Set table row as expecting max user.
    * @param ctx
    */
-  actionSetMaxUsers(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        q.state = this.STATE_MAX_USERS;
-        q.save().then((q2) => {
-          this.sendStateMessage(q2, ctx);
-        });
-      }
-    });
+  async actionSetMaxUsers(ctx) {
+    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list == null) {
+      ctx.reply('Execute /create first!');
+    } else {
+      list.state = this.STATE_MAX_USERS;
+      list = await list.save();
+      this.sendStateMessage(list, ctx);
+    }
   }
 
   /**
-   * Preview the final message.
+   * Set table row as expecting notification threshold.
    * @param ctx
    */
-  actionPreview(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    const include = [this.db.ListUser];
-    this.getQuery(where, include).then((q) => {
-      if (q == null) {
-        ctx.reply('Execute /create first!');
-      } else {
-        const message = new Preview(q).render();
-        ctx.replyWithMarkdown(message);
-      }
-    });
+  async actionSetNotification(ctx) {
+    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list == null) {
+      ctx.reply('Execute /create first!');
+    } else {
+      list.state = this.STATE_SET_NOTIFICATION;
+      list = await list.save();
+      this.sendStateMessage(list, ctx);
+    }
   }
 
   /**
    * Cancel the creation process.
    * @param ctx
    */
-  actionCancel(ctx) {
-    const where = {
-      creatorId: ctx.from.id,
-    };
-    this.getQuery(where).then((q) => {
-      if (q !== null) {
-        q.destroy().then(() => {
-          ctx.reply('Cancelled!');
-        });
-      } else {
-        ctx.reply('Nothing to cancel!');
-      }
-    });
+  async actionCancel(ctx) {
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list !== null) {
+      await list.destroy();
+      ctx.reply('Cancelled!');
+    } else {
+      ctx.reply('Nothing to cancel!');
+    }
   }
 }
 
