@@ -62,7 +62,7 @@ class AdminContext {
     const list = await this.listQueries.getSingleFromId(listId, true, true);
     if (list !== null) {
       try {
-        //TODO: Update original on user remove.
+        // TODO: Update original on user remove.
         new AdminView(list).sendUserList(ctx, true);
       } catch (e) {
         // Ignore...
@@ -92,7 +92,7 @@ class AdminContext {
       try {
         new AdminView(list).send(ctx, true, true);
         // TODO: Update original below.
-        //new ListView(list).send(ctx, true); // TODO: Use group and message id instead.
+        // new ListView(list).send(ctx, true); // TODO: Use group and message id instead.
       } catch (e) {
         // Ignore...
       }

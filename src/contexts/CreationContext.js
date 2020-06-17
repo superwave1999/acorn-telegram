@@ -14,7 +14,7 @@ class CreationContext {
     bot.action('set_notification', (ctx) => this.actionSetNotification(ctx));
     bot.action('cancel_creation', (ctx) => this.actionCancel(ctx));
     // TODO: How to avoid listening to groups
-    //bot.on('text', (ctx) => this.messageHandler(ctx));
+    // bot.on('text', (ctx) => this.messageHandler(ctx));
     return bot;
   }
 
