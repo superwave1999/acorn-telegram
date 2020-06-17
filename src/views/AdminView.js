@@ -40,12 +40,12 @@ class AdminView {
    */
   userKeyboardMarkup() {
     const keyboard = [];
-    keyboard.push([{ text: 'Return', callback_data: 'manage_list' }]); // TODO: Return function.
+    keyboard.push([{ text: 'Return', callback_data: 'refresh_list' }]);
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
         order += 1;
-        keyboard.push([{ text: `${order}. @${user.username}`, callback_data: `complete_user?forceId=${user.userId}` }]);
+        keyboard.push([{ text: `${order}. @${user.username}`, callback_data: `manage_complete?forceId=${user.userId}` }]);
       });
     }
     return { inline_keyboard: keyboard };

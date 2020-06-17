@@ -1,5 +1,4 @@
 const ListView = require('../views/ListView');
-const urlParser = require('../helpers/urlParser');
 const GeneralRepository = require('../database/queries/list');
 const CreationRepository = require('../database/queries/creation');
 
@@ -13,7 +12,7 @@ class ListContext {
       }
     });
     bot.action('add_user', (ctx) => this.contextCommon(ctx) && this.actionAddUser(ctx));
-    bot.action(/^complete_user/, (ctx) => this.contextCommon(ctx) && this.actionCompleteUser(ctx));
+    bot.action('complete_user', (ctx) => this.contextCommon(ctx) && this.actionCompleteUser(ctx));
     return bot;
   }
 
@@ -75,7 +74,7 @@ class ListContext {
    * @returns {Promise<void>}
    */
   async actionCompleteUser(ctx) {
-    const userId = urlParser(ctx.update.callback_query.data, 'forceId') || ctx.from.id;
+    const userId = ctx.from.id;
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
     const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, false);
