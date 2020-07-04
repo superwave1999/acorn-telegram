@@ -7,13 +7,29 @@ class NotificationView {
   }
 
   /**
-   * Render main output
+   * Render notification
    * @returns {string}
    */
-  render() {
+  renderNotification() {
     let output = `${defaultTitle}\n`;
     output += `${msgIsland}_${this.data.island}_`;
     return output;
+  }
+
+  /**
+   * Send the notification.
+   * @param ctx
+   */
+  send(ctx) {
+    if (this.data.ListUsers) {
+      let order = 0;
+      this.data.ListUsers.forEach((user) => {
+        order += 1;
+        if (this.data.notification === order) {
+          ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'MarkdownV2' });
+        }
+      });
+    }
   }
 }
 

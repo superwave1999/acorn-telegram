@@ -1,39 +1,194 @@
+const Preview = require('../views/PreviewView');
+const CreationRepository = require('../database/queries/creation');
 const ListView = require('../views/ListView');
 const GeneralRepository = require('../database/queries/list');
-const CreationRepository = require('../database/queries/creation');
 
 class ListContext {
   constructor(bot, db) {
-    this.conversionQueries = new CreationRepository(db);
     this.listQueries = new GeneralRepository(db);
-    bot.mention(bot.options.username, (ctx) => {
-      if (ctx.message.text === `@${bot.options.username} get` && this.contextCommon(ctx)) {
-        this.baseCommand(ctx);
-      }
-    });
-    bot.action('add_user', (ctx) => this.contextCommon(ctx) && this.actionAddUser(ctx));
-    bot.action('complete_user', (ctx) => this.contextCommon(ctx) && this.actionCompleteUser(ctx));
+    this.queries = new CreationRepository(db);
+    this.STATE_ISLAND = 0;
+    this.STATE_PRICE = 1;
+    this.STATE_READY = 2;
+    this.STATE_MAX_USERS = 3;
+    this.STATE_SET_NOTIFICATION = 4;
+    this.USERNAME = bot.options.username;
+    // Creation
+    bot.command('create', (ctx) => this.baseCommand(ctx));
+    bot.action('set_max_users', (ctx) => this.actionSetMaxUsers(ctx));
+    bot.action('set_notification', (ctx) => this.actionSetNotification(ctx));
+    bot.action('cancel_creation', (ctx) => this.actionCancel(ctx));
+    // Listing
+    bot.action('add_user', (ctx) => this.actionAddUser(ctx));
+    bot.action('complete_user', (ctx) => this.actionCompleteUser(ctx));
+    // Both
+    bot.on('text', (ctx) => this.messageHandler(ctx));
     return bot;
   }
 
   /**
-   * Technically middleware. Creation must be done in private.
+   * Handles written messages.
+   * @param ctx
    */
-  contextCommon(ctx) {
-    return (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup');
+  async messageHandler(ctx) {
+    if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
+      if (ctx.message.text === `@${this.USERNAME} get`) {
+        await this.convertCommand(ctx);
+      }
+    } else {
+      const list = await this.queries.getSingleFromUserId(ctx.from.id);
+      if (list == null) {
+        ctx.reply('Execute /create first!');
+      } else {
+        await this.handleMessageState(list, ctx);
+      }
+    }
+  }
+
+  /**
+   * Create listing command.
+   * @param ctx
+   */
+  async baseCommand(ctx) {
+    const created = await this.queries.createList(ctx.from);
+    if (created.length > 0) {
+      this.sendStateMessage(created[0], ctx);
+    }
+  }
+
+  /**
+   * Send message by state type. Returns promise.
+   * @param q
+   * @param ctx
+   * @returns {null}
+   */
+  sendStateMessage(q, ctx) {
+    switch (q.state) {
+      case this.STATE_ISLAND:
+        ctx.reply('Creation menu.\n(1/3) Send me the name of your island!');
+        break;
+      case this.STATE_PRICE:
+        ctx.reply('(2/3) Now, please give me the price.');
+        break;
+      case this.STATE_READY || this.STATE_MAX_USERS:
+        new Preview(q).sendPreview(ctx);
+        break;
+      case this.STATE_MAX_USERS:
+        ctx.reply('Give me the user limit (inclusive).');
+        break;
+      case this.STATE_SET_NOTIFICATION:
+        ctx.reply('Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).');
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Read message and store depending on status.
+   * @param q
+   * @param ctx
+   */
+  async handleMessageState(q, ctx) {
+    const expectedMessage = ctx.message.text;
+    let q2 = null;
+    switch (q.state) {
+      case this.STATE_ISLAND:
+        q.island = expectedMessage;
+        q.state = this.STATE_PRICE;
+        q2 = await q.save();
+        this.sendStateMessage(q2, ctx);
+        break;
+      case this.STATE_PRICE:
+        if (/^\d+$/.test(expectedMessage)) {
+          q.price = expectedMessage;
+          q.state = this.STATE_READY;
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
+        } else {
+          ctx.reply('Please provide a number');
+        }
+        break;
+      case this.STATE_MAX_USERS:
+        if (/^\d+$/.test(expectedMessage)) {
+          q.maxUsers = expectedMessage;
+          q.state = this.STATE_READY;
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
+        } else {
+          ctx.reply('Please provide a number');
+        }
+        break;
+      case this.STATE_SET_NOTIFICATION:
+        if (/^\d+$/.test(expectedMessage)) {
+          q.notification = expectedMessage;
+          q.state = this.STATE_READY;
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
+        } else {
+          ctx.reply('Please provide a number');
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Set table row as expecting max user.
+   * @param ctx
+   */
+  async actionSetMaxUsers(ctx) {
+    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list == null) {
+      ctx.reply('Execute /create first!');
+    } else {
+      list.state = this.STATE_MAX_USERS;
+      list = await list.save();
+      this.sendStateMessage(list, ctx);
+    }
+  }
+
+  /**
+   * Set table row as expecting notification threshold.
+   * @param ctx
+   */
+  async actionSetNotification(ctx) {
+    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list == null) {
+      ctx.reply('Execute /create first!');
+    } else {
+      list.state = this.STATE_SET_NOTIFICATION;
+      list = await list.save();
+      this.sendStateMessage(list, ctx);
+    }
+  }
+
+  /**
+   * Cancel the creation process.
+   * @param ctx
+   */
+  async actionCancel(ctx) {
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
+    if (list !== null) {
+      await list.destroy();
+      ctx.reply('Cancelled!');
+    } else {
+      ctx.reply('Nothing to cancel!');
+    }
   }
 
   /**
    * Print the created listing in a group.
    * @param ctx
    */
-  async baseCommand(ctx) {
+  async convertCommand(ctx) {
     try {
-      ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id);
     } catch (e) {
       // Not admin of group
     }
-    const list = await this.conversionQueries.getSingleFromUserId(ctx.from.id);
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
       const message = await new ListView(list).send(ctx);
       if (message) {
