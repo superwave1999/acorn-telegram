@@ -5,8 +5,9 @@ const msgUsers = '🧍 ';
 const msgLocked = '⚠️ *LISTING LOCKED*';
 
 class ListView {
-  constructor(data) {
+  constructor(data, useChatId = false) {
     this.data = data;
+    this.useChatId = useChatId;
   }
 
   /**
@@ -66,31 +67,55 @@ class ListView {
    * @param adminMenu
    * @param newData
    */
-  send(ctx, update = false, adminMenu = false, newData = null) {
+  send(ctx, update = false, newData = null) {
     let message = null;
     if (newData) {
       this.data = newData;
     }
-    let keyboard = {};
-    if (adminMenu) {
-      keyboard = this.adminKeyboard();
-      // TODO: Remove above
-    }
-    const markup = { ...this.markup(), ...keyboard };
+    const text = this.render();
+    const markup = this.markup();
     if (update) {
-      try {
-        message = ctx.editMessageText(this.render(), {
+      if (this.useChatId) {
+        message = ctx.telegram.editMessageText(
+          this.data.publicChatId,
+          this.data.publicMessageId,
+          null,
+          text,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: markup,
+          },
+        );
+      } else {
+        try {
+          message = ctx.editMessageText(
+            text,
+            {
+              parse_mode: 'markdown',
+              reply_markup: markup,
+            },
+          );
+        } catch (e) {
+          // Ignore...
+        }
+      }
+    } else if (this.useChatId) {
+      message = ctx.telegram.sendMessage(
+        this.data.publicChatId,
+        text,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: markup,
+        },
+      );
+    } else {
+      message = ctx.reply(
+        text,
+        {
           parse_mode: 'markdown',
           reply_markup: markup,
-        });
-      } catch (e) {
-        // Ignore...
-      }
-    } else {
-      message = ctx.reply(this.render(), {
-        parse_mode: 'markdown',
-        reply_markup: markup,
-      });
+        },
+      );
     }
     return message;
   }

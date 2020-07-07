@@ -73,7 +73,7 @@ class AdminView {
         // Ignore...
       }
     } else {
-      message = ctx.telegram.sendMessage(ctx.from.id, this.render(), { parse_mode: 'MarkdownV2', reply_markup: keyboard });
+      message = ctx.telegram.sendMessage(ctx.from.id, this.render(), { parse_mode: 'Markdown', reply_markup: keyboard });
     }
     return message;
   }

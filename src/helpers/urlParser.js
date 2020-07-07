@@ -9,9 +9,9 @@ module.exports = (query, variable) => {
   if (sep.length > 1) {
     const pairs = sep[1].split('&');
     pairs.forEach((pair) => {
-      const v = pair.split('=');
-      if (v[0] === variable) {
-        found = v[1];
+      const [v, data] = pair.split('=');
+      if (v === variable) {
+        found = data;
       }
     });
   }

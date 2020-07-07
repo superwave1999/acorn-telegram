@@ -4,23 +4,23 @@ module.exports = {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED,
     },
     creatorId: {
       allowNull: false,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED, // Users are always positive
     },
     associateId: {
       allowNull: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED, // Users are always positive
     },
     publicChatId: {
       allowNull: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT, // Signed 64 (telegram docs)
     },
     publicMessageId: {
       allowNull: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED, // Messages increment upwards
     },
     language: {
       allowNull: false,

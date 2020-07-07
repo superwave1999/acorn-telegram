@@ -1,6 +1,7 @@
-const TelegrafInlineMenu = require('telegraf-inline-menu');
 const AdminView = require('../views/AdminView');
+const ListView = require('../views/ListView');
 const GeneralRepository = require('../database/queries/list');
+const NotificationView = require('../views/NotificationView');
 
 const idParser = require('../helpers/idParser');
 const urlParser = require('../helpers/urlParser');
@@ -28,7 +29,7 @@ class AdminContext {
     const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, true);
     if (list !== null) {
       try {
-        new AdminView(list).send(ctx, true, update);
+        await new AdminView(list).send(ctx, true, update);
       } catch (e) {
         // Ignore...
       }
@@ -36,7 +37,7 @@ class AdminContext {
   }
 
   /**
-   * Load admin menu. Sends it to private chat. Can also accept update parameter.
+   * Refresh admin menu.
    * @param ctx
    * @returns {Promise<void>}
    */
@@ -45,7 +46,7 @@ class AdminContext {
     const list = await this.listQueries.getSingleFromId(listId, true, true);
     if (list !== null) {
       try {
-        new AdminView(list).send(ctx, true, true);
+        await new AdminView(list).send(ctx, true, true);
       } catch (e) {
         // Ignore...
       }
@@ -62,7 +63,6 @@ class AdminContext {
     const list = await this.listQueries.getSingleFromId(listId, true, true);
     if (list !== null) {
       try {
-        // TODO: Update original on user remove.
         new AdminView(list).sendUserList(ctx, true);
       } catch (e) {
         // Ignore...
@@ -90,9 +90,8 @@ class AdminContext {
       list.isClosed = setClosed;
       await list.save();
       try {
-        new AdminView(list).send(ctx, true, true);
-        // TODO: Update original below.
-        // new ListView(list).send(ctx, true); // TODO: Use group and message id instead.
+        await new AdminView(list).send(ctx, true, true);
+        await new ListView(list, true).send(ctx, true);
       } catch (e) {
         // Ignore...
       }
@@ -116,7 +115,9 @@ class AdminContext {
         list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
         try {
-          new AdminView(list).sendUserList(ctx, true);
+          await new AdminView(list).sendUserList(ctx, true);
+          await new ListView(list, true).send(ctx, true);
+          await new NotificationView(list).send(ctx);
         } catch (e) {
           // Ignore...
         }

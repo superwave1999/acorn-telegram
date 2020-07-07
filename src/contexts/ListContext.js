@@ -1,6 +1,7 @@
 const Preview = require('../views/PreviewView');
 const CreationRepository = require('../database/queries/creation');
 const ListView = require('../views/ListView');
+const NotificationView = require('../views/NotificationView');
 const GeneralRepository = require('../database/queries/list');
 
 class ListContext {
@@ -34,6 +35,8 @@ class ListContext {
     if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
       if (ctx.message.text === `@${this.USERNAME} get`) {
         await this.convertCommand(ctx);
+      } else {
+        // TODO: no-op
       }
     } else {
       const list = await this.queries.getSingleFromUserId(ctx.from.id);
@@ -50,9 +53,11 @@ class ListContext {
    * @param ctx
    */
   async baseCommand(ctx) {
-    const created = await this.queries.createList(ctx.from);
-    if (created.length > 0) {
-      this.sendStateMessage(created[0], ctx);
+    if (ctx.chat.type === 'private') {
+      const created = await this.queries.createList(ctx.from);
+      if (created.length > 0) {
+        this.sendStateMessage(created[0], ctx);
+      }
     }
   }
 
@@ -216,7 +221,7 @@ class ListContext {
         if (created) {
           list.save(); // Save new user count
           list.ListUsers.push(created);
-          new ListView(list).send(ctx, true);
+          await new ListView(list).send(ctx, true);
         }
       }
     }
@@ -240,7 +245,8 @@ class ListContext {
         list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
         try {
-          new ListView(list).send(ctx, true);
+          await new ListView(list).send(ctx, true);
+          await new NotificationView(list).send(ctx);
         } catch (e) {
           // Ignore...
         }

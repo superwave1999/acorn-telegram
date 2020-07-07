@@ -20,21 +20,19 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "mariadb": "^2.4.0",
+    "mariadb": "^2.4.1",
     "mysql2": "^2.1.0",
-    "sequelize": "^5.21.12",
+    "sequelize": "^5.22.3",
     "sequelize-cli": "^5.5.1",
     "telegraf": "^3.38.0",
     "telegraf-i18n": "^6.6.0",
-    "telegraf-inline-menu": "^4.0.1",
-    "telegraf-keyboard": "^1.1.2",
     "telegraf-ratelimit": "^2.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.2.0",
+    "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.22.0",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.10"
+    "lint-staged": "^10.2.11"
   }
 }

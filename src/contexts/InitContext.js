@@ -12,7 +12,7 @@ class InitContext {
     if (ctx.chat.type === 'private') {
       func(ctx);
     } else {
-      ctx.reply('Talk to me in private!');
+      // TODO: Send no-op
     }
   }
 

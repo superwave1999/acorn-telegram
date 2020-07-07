@@ -21,15 +21,17 @@ class NotificationView {
    * @param ctx
    */
   send(ctx) {
+    let message = null;
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
         order += 1;
         if (this.data.notification === order) {
-          ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'MarkdownV2' });
+          message = ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' });
         }
       });
     }
+    return message;
   }
 }
 

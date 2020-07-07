@@ -4,11 +4,11 @@ module.exports = {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED,
     },
     listId: {
       allowNull: false,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED,
       onDelete: 'CASCADE',
       references: {
         model: 'Lists',
@@ -17,7 +17,7 @@ module.exports = {
     },
     userId: {
       allowNull: false,
-      type: Sequelize.BIGINT,
+      type: Sequelize.BIGINT.UNSIGNED, // Users are always positive
     },
     username: {
       allowNull: false,
