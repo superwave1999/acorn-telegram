@@ -9,9 +9,9 @@ const urlParser = require('../helpers/urlParser');
 class AdminContext {
   constructor(bot, db) {
     this.listQueries = new GeneralRepository(db);
-    bot.action('manage_list', (ctx) => this.contextCommon(ctx) && this.loadMenu(ctx));
-    bot.action('refresh_list', (ctx) => this.contextCommon(ctx) && this.loadMenuRefresh(ctx));
-    bot.action('manage_users', (ctx) => this.contextCommon(ctx) && this.userMenu(ctx));
+    bot.action('manage_list', (ctx) => this.loadMenu(ctx));
+    bot.action('refresh_list', (ctx) => this.loadMenuRefresh(ctx));
+    bot.action('manage_users', (ctx) => this.userMenu(ctx));
     bot.action(/^manage_lock/, (ctx) => this.actionMenuLock(ctx));
     bot.action(/^manage_complete/, (ctx) => this.actionCompleteUser(ctx));
     return bot;
@@ -68,13 +68,6 @@ class AdminContext {
         // Ignore...
       }
     }
-  }
-
-  /**
-   * Technically middleware. Creation must be done in private.
-   */
-  contextCommon(ctx) {
-    return true;
   }
 
   /**
