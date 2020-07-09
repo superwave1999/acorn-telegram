@@ -36,3 +36,4 @@ view.create.kb.cancel: 'Cancel'
 
 view.notify: '🌰 *Its your turn soon!*'
 
+ratelimit: 'Rate limit exceeded, try again in a few seconds!'

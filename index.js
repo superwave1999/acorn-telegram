@@ -28,7 +28,7 @@ if (process.env.LIMIT_MS && process.env.LIMIT_MESSAGES) {
     keyGenerator: (ctx) => applyRateLimit(ctx),
     onLimitExceeded: (ctx, next) => {
       if (ctx.chat.type === 'private') {
-        ctx.reply('Rate limit exceeded, try again in a few seconds!');
+        ctx.reply(ctx.i18n.t('ratelimit'));
       } else {
         next();
       }

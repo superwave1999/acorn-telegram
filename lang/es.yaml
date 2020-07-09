@@ -36,3 +36,4 @@ view.create.kb.cancel: 'Cancelar'
 
 view.notify: '🌰 *¡Calienta que sales!*'
 
+ratelimit: 'Servidor saturado, prueba de nuevo en unos segundos.'
