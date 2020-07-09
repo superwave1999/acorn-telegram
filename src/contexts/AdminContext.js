@@ -18,6 +18,20 @@ class AdminContext {
   }
 
   /**
+   * Check if user can administrate the list.
+   * @param ctx
+   */
+  async getAdminUsers(ctx, list) {
+    const userId = ctx.from.id;
+    const arr = [list.creatorId, list.associateId];
+    let isAdmin = (arr.indexOf(userId) !== -1);
+    if (!isAdmin) {
+      isAdmin = (await ctx.from.getChatMember(userId).status === ('creator' || 'administrator'));
+    }
+    return isAdmin;
+  }
+
+  /**
    * Load admin menu. Sends it to private chat. Can also accept update parameter.
    * @param ctx
    * @returns {Promise<void>}
@@ -25,11 +39,10 @@ class AdminContext {
   async loadMenu(ctx) {
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
-    const update = parseInt(urlParser(ctx.update.callback_query.data, 'update') || '0', 10);
     const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, true);
-    if (list !== null) {
+    if (list !== null && await this.getAdminUsers(ctx, list)) {
       try {
-        await new AdminView(list).send(ctx, true, update);
+        await new AdminView(list).send(ctx, true);
       } catch (e) {
         // Ignore...
       }

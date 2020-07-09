@@ -82,7 +82,7 @@ class ListContext {
         ctx.reply('Give me the user limit (inclusive).');
         break;
       case this.STATE_SET_NOTIFICATION:
-        ctx.reply('Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).');
+        ctx.reply('Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).\n 0 to disable.');
         break;
       default:
         break;
@@ -99,39 +99,34 @@ class ListContext {
     let q2 = null;
     switch (q.state) {
       case this.STATE_ISLAND:
-        q.island = expectedMessage;
-        q.state = this.STATE_PRICE;
-        q2 = await q.save();
-        this.sendStateMessage(q2, ctx);
+        if (expectedMessage.length < 255) {
+          q.island = expectedMessage;
+          q.state = this.STATE_PRICE;
+          q2 = await q.save();
+          this.sendStateMessage(q2, ctx);
+        } else {
+          ctx.reply('Island name too long!');
+        }
         break;
       case this.STATE_PRICE:
-        if (/^\d+$/.test(expectedMessage)) {
+        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_PRICE || 800)) {
           q.price = expectedMessage;
           q.state = this.STATE_READY;
           q2 = await q.save();
           this.sendStateMessage(q2, ctx);
         } else {
-          ctx.reply('Please provide a number');
+          ctx.reply('Please provide a valid number!');
         }
         break;
       case this.STATE_MAX_USERS:
-        if (/^\d+$/.test(expectedMessage)) {
+      case this.STATE_SET_NOTIFICATION:
+        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_LIST_USERS || 100)) {
           q.maxUsers = expectedMessage;
           q.state = this.STATE_READY;
           q2 = await q.save();
           this.sendStateMessage(q2, ctx);
         } else {
-          ctx.reply('Please provide a number');
-        }
-        break;
-      case this.STATE_SET_NOTIFICATION:
-        if (/^\d+$/.test(expectedMessage)) {
-          q.notification = expectedMessage;
-          q.state = this.STATE_READY;
-          q2 = await q.save();
-          this.sendStateMessage(q2, ctx);
-        } else {
-          ctx.reply('Please provide a number');
+          ctx.reply('Please provide a number!');
         }
         break;
       default:
