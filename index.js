@@ -3,8 +3,10 @@ require('dotenv').config();
 
 process.stdout.write('Config loaded\n');
 const Telegraf = require('telegraf');
+const TelegrafI18n = require('telegraf-i18n');
 const rateLimit = require('telegraf-ratelimit');
 const fs = require('fs');
+const path = require('path');
 const applyRateLimit = require('./src/helpers/applyRateLimit');
 const db = require('./src/database');
 const InitContext = require('./src/contexts/InitContext');
@@ -12,6 +14,12 @@ const ListContext = require('./src/contexts/ListContext');
 const AdminContext = require('./src/contexts/AdminContext');
 
 let bot = new Telegraf(process.env.BOT_TOKEN, { username: process.env.BOT_USERNAME });
+const i18n = new TelegrafI18n({
+  defaultLanguage: 'en',
+  defaultLanguageOnMissing: true,
+  directory: path.resolve(__dirname, 'lang'),
+});
+bot.use(i18n.middleware());
 
 if (process.env.LIMIT_MS && process.env.LIMIT_MESSAGES) {
   bot.use(rateLimit({
@@ -46,7 +54,8 @@ if (process.env.WEBHOOK) {
     source: process.env.SERVER_CERT,
   });
   bot.startWebhook(process.env.WEBHOOK_PATH, tlsOptions, process.env.WEBHOOK_PORT);
+  process.stdout.write('Server running in webhook mode\n');
 } else {
   bot.startPolling();
+  process.stdout.write('Server running in polling mode\n');
 }
-process.stdout.write('Server running\n');

@@ -7,24 +7,20 @@ class PreviewView extends ListView {
    * @param update
    * @param newData
    */
-  sendPreview(ctx, update = false, newData = null) {
+  sendPreview(update = false, newData = null) {
     let message = null;
     if (newData) {
       this.data = newData;
     }
     const markup = this.markupPreview();
     if (update) {
-      try {
-        message = ctx.editMessageText(this.render(), {
-          parse_mode: 'markdown',
-          reply_markup: markup,
-        });
-      } catch (e) {
-        // Ignore...
-      }
+      message = this.ctx.editMessageText(this.render(), {
+        parse_mode: 'Markdown',
+        reply_markup: markup,
+      }).catch();
     } else {
-      message = ctx.reply(this.render(), {
-        parse_mode: 'markdown',
+      message = this.ctx.reply(this.render(), {
+        parse_mode: 'Markdown',
         reply_markup: markup,
       });
     }
@@ -39,21 +35,21 @@ class PreviewView extends ListView {
       inline_keyboard: [
         [
           {
-            text: `User limit (${this.data.maxUsers})`,
+            text: `${this.ctx.i18n.t('view.create.kb.limit')} (${this.data.maxUsers})`,
             callback_data: 'set_max_users',
           },
           {
-            text: `Notification (${this.data.notification})`,
+            text: `${this.ctx.i18n.t('view.create.kb.notify')} (${this.data.notification})`,
             callback_data: 'set_notification',
           },
         ],
         [
           {
-            text: 'Send to group',
+            text: this.ctx.i18n.t('view.create.kb.send'),
             switch_inline_query: 'get',
           },
           {
-            text: 'Cancel',
+            text: this.ctx.i18n.t('view.create.kb.cancel'),
             callback_data: 'cancel_creation',
           },
         ],

@@ -20,14 +20,14 @@ class InitContext {
    * Run on start.
    */
   baseCommand(ctx) {
-    ctx.reply('Welcome! Create your listing with /create');
+    ctx.reply(ctx.i18n.t('command.start'));
   }
 
   /**
    * Tutorial.
    */
   helpCommand(ctx) {
-    ctx.reply('1. /create your listing\n2. Send your island name\n3. Send your price\n4. (Optional) Set max users and notification setting on list\n5. Send it to a group');
+    ctx.reply(ctx.i18n.t('command.help'));
   }
 }
 

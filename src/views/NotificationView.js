@@ -1,8 +1,6 @@
-const defaultTitle = '🌰 *Its your turn soon!*';
-const msgIsland = '🏝️ ';
-
 class NotificationView {
-  constructor(data) {
+  constructor(ctx, data) {
+    this.ctx = ctx;
     this.data = data;
   }
 
@@ -11,8 +9,8 @@ class NotificationView {
    * @returns {string}
    */
   renderNotification() {
-    let output = `${defaultTitle}\n`;
-    output += `${msgIsland}_${this.data.island}_`;
+    let output = `${this.ctx.i18n.t('view.notify')}\n`;
+    output += `${this.ctx.i18n.t('view.list.island')}_${this.data.island}_`;
     return output;
   }
 
@@ -20,14 +18,14 @@ class NotificationView {
    * Send the notification.
    * @param ctx
    */
-  send(ctx) {
+  send() {
     let message = null;
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
         order += 1;
         if (this.data.notification === order) {
-          message = ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' });
+          message = this.ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' });
         }
       });
     }

@@ -1,9 +1,8 @@
 const msgId = '🆔 ';
-const defaultTitle = '🌰 *Administration menu*';
-const msgIsland = '🏝️ ';
 
 class AdminView {
-  constructor(data) {
+  constructor(ctx, data) {
+    this.ctx = ctx;
     this.data = data;
   }
 
@@ -13,8 +12,8 @@ class AdminView {
    */
   render() {
     let output = `${msgId}${this.data.id}\n`;
-    output += `${defaultTitle}\n`;
-    output += `${msgIsland}_${this.data.island}_\n`;
+    output += `${this.ctx.i18n.t('view.admin.title')}\n`;
+    output += `${this.ctx.i18n.t('view.admin.island')}_${this.data.island}_\n`;
     return output;
   }
 
@@ -24,12 +23,12 @@ class AdminView {
   markup() {
     const keyboard = [];
     if (this.data.ListUsers && this.data.ListUsers.length > 0) {
-      keyboard.push([{ text: 'Manage users', callback_data: 'manage_users' }]);
+      keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.manage'), callback_data: 'manage_users' }]);
     }
     if (this.data.isClosed) {
-      keyboard.push([{ text: 'Unlock list', callback_data: 'manage_lock?state=0' }]);
+      keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.unlock'), callback_data: 'manage_lock?state=0' }]);
     } else {
-      keyboard.push([{ text: 'Lock list', callback_data: 'manage_lock?state=1' }]);
+      keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.lock'), callback_data: 'manage_lock?state=1' }]);
     }
     return { inline_keyboard: keyboard };
   }
@@ -40,7 +39,7 @@ class AdminView {
    */
   userKeyboardMarkup() {
     const keyboard = [];
-    keyboard.push([{ text: 'Return', callback_data: 'refresh_list' }]);
+    keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.return'), callback_data: 'refresh_list' }]);
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
@@ -57,7 +56,7 @@ class AdminView {
    * @param withKeyboard
    * @param update
    */
-  send(ctx, withKeyboard = true, update = false) {
+  send(withKeyboard = true, update = false) {
     let message = null;
     let keyboard = null;
     if (withKeyboard) {
@@ -65,7 +64,7 @@ class AdminView {
     }
     if (update) {
       try {
-        message = ctx.editMessageText(this.render(), {
+        message = this.ctx.editMessageText(this.render(), {
           parse_mode: 'markdown',
           reply_markup: keyboard,
         });
@@ -73,7 +72,7 @@ class AdminView {
         // Ignore...
       }
     } else {
-      message = ctx.telegram.sendMessage(ctx.from.id, this.render(), { parse_mode: 'Markdown', reply_markup: keyboard });
+      message = this.ctx.telegram.sendMessage(this.ctx.from.id, this.render(), { parse_mode: 'Markdown', reply_markup: keyboard });
     }
     return message;
   }
@@ -83,17 +82,17 @@ class AdminView {
    * @param ctx
    * @param update
    */
-  sendUserList(ctx, update = false) {
+  sendUserList(update = false) {
     let message = null;
     const markup = this.userKeyboardMarkup();
     if (update) {
       try {
-        message = ctx.editMessageText(this.render(), { parse_mode: 'markdown', reply_markup: markup });
+        message = this.ctx.editMessageText(this.render(), { parse_mode: 'markdown', reply_markup: markup });
       } catch (e) {
         // Ignore...
       }
     } else {
-      message = ctx.reply(this.render(), { parse_mode: 'markdown', reply_markup: markup });
+      message = this.ctx.reply(this.render(), { parse_mode: 'markdown', reply_markup: markup });
     }
     return message;
   }

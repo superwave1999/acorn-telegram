@@ -1,11 +1,6 @@
-const defaultTitle = '🌰 *Trade listing*';
-const msgPrice = '💰 ';
-const msgIsland = '🏝️ ';
-const msgUsers = '🧍 ';
-const msgLocked = '⚠️ *LISTING LOCKED*';
-
 class ListView {
-  constructor(data, useChatId = false) {
+  constructor(ctx, data, useChatId = false) {
+    this.ctx = ctx;
     this.data = data;
     this.useChatId = useChatId;
   }
@@ -16,17 +11,17 @@ class ListView {
    */
   render() {
     let output = '';
-    output += `${defaultTitle}\n`;
-    output += `${msgPrice}${this.data.price}\n`;
-    output += `${msgIsland}_${this.data.island}_\n`;
+    output += `${this.ctx.i18n.t('view.list.title')}\n`;
+    output += `${this.ctx.i18n.t('view.list.price')}${this.data.price}\n`;
+    output += `${this.ctx.i18n.t('view.list.island')}_${this.data.island}_\n`;
     if (this.data.countUsers > this.data.maxUsers) {
-      output += `${msgUsers} Limit reached!\n`;
+      output += `${this.ctx.i18n.t('view.list.users.limit')}\n`;
     } else {
-      output += `${msgUsers}Max: ${this.data.maxUsers}\n`;
+      output += `${this.ctx.i18n.t('view.list.users.max')}${this.data.maxUsers}\n`;
     }
     output += this.renderUserRows();
     if (this.data.isClosed) {
-      output += `${msgLocked}\n`;
+      output += `${this.ctx.i18n.t('view.list.locked')}\n`;
     }
     return output;
   }
@@ -53,9 +48,9 @@ class ListView {
   markup() {
     return {
       inline_keyboard: [
-        [{ text: 'I\'m going', callback_data: 'add_user' }],
-        [{ text: 'Done', callback_data: 'complete_user' }],
-        [{ text: 'Options', callback_data: 'manage_list' }],
+        [{ text: this.ctx.i18n.t('view.list.kb.add'), callback_data: 'add_user' }],
+        [{ text: this.ctx.i18n.t('view.list.kb.complete'), callback_data: 'complete_user' }],
+        [{ text: this.ctx.i18n.t('view.list.kb.options'), callback_data: 'manage_list' }],
       ],
     };
   }
@@ -67,7 +62,7 @@ class ListView {
    * @param adminMenu
    * @param newData
    */
-  send(ctx, update = false, newData = null) {
+  send(update = false, newData = null) {
     let message = null;
     if (newData) {
       this.data = newData;
@@ -76,7 +71,7 @@ class ListView {
     const markup = this.markup();
     if (update) {
       if (this.useChatId) {
-        message = ctx.telegram.editMessageText(
+        message = this.ctx.telegram.editMessageText(
           this.data.publicChatId,
           this.data.publicMessageId,
           null,
@@ -87,20 +82,16 @@ class ListView {
           },
         );
       } else {
-        try {
-          message = ctx.editMessageText(
-            text,
-            {
-              parse_mode: 'markdown',
-              reply_markup: markup,
-            },
-          );
-        } catch (e) {
-          // Ignore...
-        }
+        message = this.ctx.editMessageText(
+          text,
+          {
+            parse_mode: 'markdown',
+            reply_markup: markup,
+          },
+        );
       }
     } else if (this.useChatId) {
-      message = ctx.telegram.sendMessage(
+      message = this.ctx.telegram.sendMessage(
         this.data.publicChatId,
         text,
         {
@@ -109,7 +100,7 @@ class ListView {
         },
       );
     } else {
-      message = ctx.reply(
+      message = this.ctx.reply(
         text,
         {
           parse_mode: 'markdown',

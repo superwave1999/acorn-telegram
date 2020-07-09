@@ -41,7 +41,7 @@ class ListContext {
     } else {
       const list = await this.queries.getSingleFromUserId(ctx.from.id);
       if (list == null) {
-        ctx.reply('Execute /create first!');
+        ctx.reply(ctx.i18n.t('list.err.create'));
       } else {
         await this.handleMessageState(list, ctx);
       }
@@ -70,19 +70,19 @@ class ListContext {
   sendStateMessage(q, ctx) {
     switch (q.state) {
       case this.STATE_ISLAND:
-        ctx.reply('Creation menu.\n(1/3) Send me the name of your island!');
+        ctx.reply(ctx.i18n.t('list.state.island'));
         break;
       case this.STATE_PRICE:
-        ctx.reply('(2/3) Now, please give me the price.');
+        ctx.reply(ctx.i18n.t('list.state.price'));
         break;
       case this.STATE_READY || this.STATE_MAX_USERS:
-        new Preview(q).sendPreview(ctx);
+        new Preview(ctx, q).sendPreview();
         break;
       case this.STATE_MAX_USERS:
-        ctx.reply('Give me the user limit (inclusive).');
+        ctx.reply(ctx.i18n.t('list.state.users'));
         break;
       case this.STATE_SET_NOTIFICATION:
-        ctx.reply('Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).\n 0 to disable.');
+        ctx.reply(ctx.i18n.t('list.state.notification'));
         break;
       default:
         break;
@@ -105,7 +105,7 @@ class ListContext {
           q2 = await q.save();
           this.sendStateMessage(q2, ctx);
         } else {
-          ctx.reply('Island name too long!');
+          ctx.reply(ctx.i18n.t('list.err.island'));
         }
         break;
       case this.STATE_PRICE:
@@ -115,7 +115,7 @@ class ListContext {
           q2 = await q.save();
           this.sendStateMessage(q2, ctx);
         } else {
-          ctx.reply('Please provide a valid number!');
+          ctx.reply(ctx.i18n.t('list.err.price'));
         }
         break;
       case this.STATE_MAX_USERS:
@@ -126,7 +126,7 @@ class ListContext {
           q2 = await q.save();
           this.sendStateMessage(q2, ctx);
         } else {
-          ctx.reply('Please provide a number!');
+          ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       default:
@@ -141,7 +141,7 @@ class ListContext {
   async actionSetMaxUsers(ctx) {
     let list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      ctx.reply('Execute /create first!');
+      ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_MAX_USERS;
       list = await list.save();
@@ -156,7 +156,7 @@ class ListContext {
   async actionSetNotification(ctx) {
     let list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      ctx.reply('Execute /create first!');
+      ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_SET_NOTIFICATION;
       list = await list.save();
@@ -172,9 +172,9 @@ class ListContext {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
       await list.destroy();
-      ctx.reply('Cancelled!');
+      ctx.reply(ctx.i18n.t('list.cancel'));
     } else {
-      ctx.reply('Nothing to cancel!');
+      ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
   }
 
@@ -190,7 +190,7 @@ class ListContext {
     }
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
-      const message = await new ListView(list).send(ctx);
+      const message = await new ListView(ctx, list).send();
       if (message) {
         list.publicChatId = message.chat.id;
         list.publicMessageId = message.message_id;
@@ -216,7 +216,7 @@ class ListContext {
         if (created) {
           list.save(); // Save new user count
           list.ListUsers.push(created);
-          await new ListView(list).send(ctx, true);
+          await new ListView(ctx, list).send(true);
         }
       }
     }
@@ -240,8 +240,8 @@ class ListContext {
         list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
         try {
-          await new ListView(list).send(ctx, true);
-          await new NotificationView(list).send(ctx);
+          await new ListView(ctx, list).send(true);
+          await new NotificationView(ctx, list).send();
         } catch (e) {
           // Ignore...
         }
