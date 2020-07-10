@@ -68,6 +68,7 @@ class ListContext {
    * @returns {null}
    */
   sendStateMessage(q, ctx) {
+    ctx.i18n.locale(q.language);
     switch (q.state) {
       case this.STATE_ISLAND:
         ctx.reply(ctx.i18n.t('list.state.island'));
@@ -95,6 +96,7 @@ class ListContext {
    * @param ctx
    */
   async handleMessageState(q, ctx) {
+    ctx.i18n.locale(q.language);
     const expectedMessage = ctx.message.text;
     let q2 = null;
     switch (q.state) {
@@ -171,6 +173,7 @@ class ListContext {
   async actionCancel(ctx) {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
+      ctx.i18n.locale(list.language);
       await list.destroy();
       ctx.reply(ctx.i18n.t('list.cancel.main'));
     } else {
@@ -190,6 +193,7 @@ class ListContext {
     }
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
+      ctx.i18n.locale(list.language);
       const message = await new ListView(ctx, list).send();
       if (message) {
         list.publicChatId = message.chat.id;
@@ -216,6 +220,7 @@ class ListContext {
         if (created) {
           list.save(); // Save new user count
           list.ListUsers.push(created);
+          ctx.i18n.locale(created.language);
           await new ListView(ctx, list).send(true);
         }
       }
@@ -239,6 +244,7 @@ class ListContext {
         list.ListUsers[index].finished = true; // Mark complete
         list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
+        ctx.i18n.locale(list.language);
         try {
           await new ListView(ctx, list).send(true);
           await new NotificationView(ctx, list).send();

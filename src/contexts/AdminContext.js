@@ -41,6 +41,7 @@ class AdminContext {
     const messageId = ctx.update.callback_query.message.message_id;
     const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, true);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
+      ctx.i18n.locale(list.language);
       try {
         await new AdminView(list).send(ctx, true);
       } catch (e) {
@@ -58,6 +59,7 @@ class AdminContext {
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId, true, true);
     if (list !== null) {
+      ctx.i18n.locale(list.language);
       try {
         await new AdminView(list).send(ctx, true, true);
       } catch (e) {
@@ -75,6 +77,7 @@ class AdminContext {
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId, true, true);
     if (list !== null) {
+      ctx.i18n.locale(list.language);
       try {
         new AdminView(list).sendUserList(ctx, true);
       } catch (e) {
@@ -95,6 +98,7 @@ class AdminContext {
     if (list !== null) {
       list.isClosed = setClosed;
       await list.save();
+      ctx.i18n.locale(list.language);
       try {
         await new AdminView(list).send(ctx, true, true);
         await new ListView(list, true).send(ctx, true);
@@ -120,6 +124,7 @@ class AdminContext {
         list.ListUsers[index].finished = true; // Mark complete
         list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
+        ctx.i18n.locale(list.language);
         try {
           await new AdminView(list).sendUserList(ctx, true);
           await new ListView(list, true).send(ctx, true);
