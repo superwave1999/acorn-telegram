@@ -1,0 +1,61 @@
+{
+  "command": {
+    "start": "Welcome! Create your listing with /create",
+    "help": "1. /create your listing\\n2. Send your island name\\n3. Send your price\\n4. (Optional) Set max users and notification\\n5. Send it to a group"
+  },
+  "list": {
+    "err": {
+      "create": "Execute /create first!",
+      "island": "Island name too long!",
+      "price": "Please provide a valid number!",
+      "number": "Please provide a number!"
+    },
+    "state": {
+      "island": "(1/3) Send me the name of your island!",
+      "price": "(2/3) Now, please give me the price.",
+      "users": "Give me the user limit (inclusive).",
+      "notification": "Give me the notification threshold\\n(eg: 4 - The fourth user will get a private notification).\\n 0 to disable."
+    },
+    "cancel": {
+      "main": "Cancelled!",
+      "none": "Nothing to cancel!"
+    }
+  },
+  "view": {
+    "admin": {
+      "title": "🌰 *Administration menu*",
+      "island": "🏝️ ",
+      "kb": {
+        "manage": "Manage users",
+        "unlock": "Unlock list",
+        "lock": "Lock list",
+        "return": "Return"
+      }
+    },
+    "list": {
+      "title": "🌰 *Trade listing*",
+      "price": "💰 ",
+      "island": "🏝️ ",
+      "users": {
+        "limit": "🧍 Limit reached!",
+        "max": "🧍 Max: "
+      },
+      "locked": "⚠️ *LISTING LOCKED*",
+      "kb": {
+        "add": "I'm going",
+        "complete": "Done",
+        "manage": "Options"
+      }
+    },
+    "create": {
+      "kb": {
+        "limit": "User limit",
+        "notify": "Notification",
+        "send": "Send to group",
+        "cancel": "Cancel"
+      }
+    },
+    "notify": "🌰 *Its your turn soon!*"
+  },
+  "ratelimit": "Rate limit exceeded, try again in a few seconds!"
+}

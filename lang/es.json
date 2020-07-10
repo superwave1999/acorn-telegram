@@ -1,0 +1,61 @@
+{
+  "command": {
+    "start": "¡Buenas! Cree su lista con /create",
+    "help": "1. /create tu listado\\n2. Envía el nombre de tu isla\\n3. Envía el precio\\n4. (Opcional) Configura el numero máximo de usuarios y las notificaciones\\n5. Envíalo a un grupo"
+  },
+  "list": {
+    "err": {
+      "create": "Antes de nada, ejecuta /create",
+      "island": "¡Nombre demasiado largo!",
+      "price": "No has introducido un número válido",
+      "number": "Introduce un número"
+    },
+    "state": {
+      "island": "(1/3) ¡Envíame el nombre de tu isla!",
+      "price": "(2/3) Envíame el precio",
+      "users": "Escriba el número máximo de usuarios (inclusive)",
+      "notification": "Deme el márgen de notificación\\n(ej: 4 - Se notificará al cuarto usuario de la lista por privado).\\n 0 desactiva"
+    },
+    "cancel": {
+      "main": "Cancelado",
+      "none": "Lista ya cancelada"
+    }
+  },
+  "view": {
+    "admin": {
+      "title": "🌰 *Menú de administración*",
+      "island": "🏝️ ",
+      "kb": {
+        "manage": "Bloquear usuarios",
+        "unlock": "Cerrar lista",
+        "lock": "Abrir lista",
+        "return": "Volver"
+      }
+    },
+    "list": {
+      "title": "🌰 *Listado de nabos*",
+      "price": "💰 ",
+      "island": "🏝️ ",
+      "users": {
+        "limit": "🧍 ¡Límite alcanzado!",
+        "max": "🧍 Máximo: "
+      },
+      "locked": "⚠️ *LISTA CERRADA*",
+      "kb": {
+        "add": "¡Voy!",
+        "complete": "Terminé/No voy",
+        "manage": "Menú admin"
+      }
+    },
+    "create": {
+      "kb": {
+        "limit": "Límite usuarios",
+        "notify": "Notificación",
+        "send": "Enviar a grupo",
+        "cancel": "Cancelar"
+      }
+    },
+    "notify": "🌰 *¡Calienta que sales!*"
+  },
+  "ratelimit": "Servidor saturado, prueba de nuevo en unos segundos."
+}

@@ -172,7 +172,7 @@ class ListContext {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
       await list.destroy();
-      ctx.reply(ctx.i18n.t('list.cancel'));
+      ctx.reply(ctx.i18n.t('list.cancel.main'));
     } else {
       ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
