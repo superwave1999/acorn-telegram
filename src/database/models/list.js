@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       associateId: DataTypes.BIGINT.UNSIGNED,
       publicChatId: DataTypes.BIGINT,
       publicMessageId: DataTypes.BIGINT.UNSIGNED,
-      language: DataTypes.STRING(4),
+      language: DataTypes.STRING(5),
       island: DataTypes.STRING,
       price: DataTypes.INTEGER(4),
       notification: DataTypes.INTEGER(4),
