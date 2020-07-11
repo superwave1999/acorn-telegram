@@ -44,7 +44,7 @@
       "kb": {
         "add": "¡Voy!",
         "complete": "Terminé/No voy",
-        "manage": "Menú admin"
+        "options": "Menú admin"
       }
     },
     "create": {

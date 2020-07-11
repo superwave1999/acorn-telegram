@@ -44,7 +44,7 @@
       "kb": {
         "add": "I'm going",
         "complete": "Done",
-        "manage": "Options"
+        "options": "Options"
       }
     },
     "create": {

@@ -43,7 +43,7 @@ class AdminContext {
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(list).send(ctx, true);
+        await new AdminView(ctx, list).send(true);
       } catch (e) {
         // Ignore...
       }
@@ -61,7 +61,7 @@ class AdminContext {
     if (list !== null) {
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(list).send(ctx, true, true);
+        await new AdminView(ctx, list).send(true, true);
       } catch (e) {
         // Ignore...
       }
@@ -79,7 +79,7 @@ class AdminContext {
     if (list !== null) {
       ctx.i18n.locale(list.language);
       try {
-        new AdminView(list).sendUserList(ctx, true);
+        await new AdminView(ctx, list).sendUserList(true);
       } catch (e) {
         // Ignore...
       }
@@ -100,8 +100,8 @@ class AdminContext {
       await list.save();
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(list).send(ctx, true, true);
-        await new ListView(list, true).send(ctx, true);
+        await new AdminView(ctx, list).send(true, true);
+        await new ListView(ctx, list, true).send(true);
       } catch (e) {
         // Ignore...
       }
@@ -126,9 +126,9 @@ class AdminContext {
         list.ListUsers.splice(index, 1); // Remove from list
         ctx.i18n.locale(list.language);
         try {
-          await new AdminView(list).sendUserList(ctx, true);
-          await new ListView(list, true).send(ctx, true);
-          await new NotificationView(list).send(ctx);
+          await new AdminView(ctx, list).sendUserList(true);
+          await new ListView(ctx, list, true).send(true);
+          await new NotificationView(ctx, list).send();
         } catch (e) {
           // Ignore...
         }
