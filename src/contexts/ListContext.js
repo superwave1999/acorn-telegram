@@ -248,7 +248,7 @@ class ListContext {
         if (created) {
           await list.save(); // Save new user count
           list.ListUsers.push(created);
-          ctx.i18n.locale(created.language);
+          ctx.i18n.locale(list.language);
           await new ListView(ctx, list).send(true);
         }
       }
