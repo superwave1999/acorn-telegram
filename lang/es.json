@@ -59,8 +59,10 @@
         "cancel": "Cancelar"
       }
     },
-    "notify": "🌰 *¡Calienta que sales!*"
+    "notify": "🌰 *¡Calienta que sales!*",
+    "notifypin": "El dueño de la isla te mandará el PIN pronto"
   },
   "ratelimit": "Servidor saturado, prueba de nuevo en unos segundos",
-  "nopermission": "No tienes permisos para realizar esa acción"
+  "nopermission": "No tienes permisos para realizar esa acción",
+  "nousername": "Necesitas un nombre de usuario para utilizar la lista.\nEntra en Ajustes."
 }

@@ -233,25 +233,30 @@ class ListContext {
 
   /**
    * Add user to list. Only if list exists and not already on.
+   * Only allows users with @username. Else notifies via private.
    * @param ctx
    * @returns {Promise<void>}
    */
   async actionAddUser(ctx) {
-    const chatId = ctx.chat.id;
-    const messageId = ctx.update.callback_query.message.message_id;
-    const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, false);
-    if (list !== null) {
-      const alreadyAdded = list.ListUsers.some((value) => value.userId === ctx.from.id);
-      list.countUsers += 1; // Increments possible count
-      if (!alreadyAdded && list.countUsers <= list.maxUsers && !list.isClosed) {
-        const created = await this.listQueries.createUser(list.id, ctx.from);
-        if (created) {
-          await list.save(); // Save new user count
-          list.ListUsers.push(created);
-          ctx.i18n.locale(list.language);
-          await new ListView(ctx, list).send(true);
+    if (ctx.from.username && ctx.from.username.length > 0) {
+      const chatId = ctx.chat.id;
+      const messageId = ctx.update.callback_query.message.message_id;
+      const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, false);
+      if (list !== null) {
+        const alreadyAdded = list.ListUsers.some((value) => value.userId === ctx.from.id);
+        list.countUsers += 1; // Increments possible count
+        if (!alreadyAdded && list.countUsers <= list.maxUsers && !list.isClosed) {
+          const created = await this.listQueries.createUser(list.id, ctx.from);
+          if (created) {
+            await list.save(); // Save new user count
+            list.ListUsers.push(created);
+            ctx.i18n.locale(list.language);
+            await new ListView(ctx, list).send(true);
+          }
         }
       }
+    } else {
+      await ctx.telegram.sendMessage(ctx.from.id, ctx.i18n.t('nousername'));
     }
   }
 
@@ -270,8 +275,7 @@ class ListContext {
       const index = list.ListUsers.findIndex((value) => value.userId === userId);
       if (index >= 0) {
         list.ListUsers[index].finished = true; // Mark complete
-        await list.ListUsers[index].save(); // Async save in database
-        list.ListUsers.splice(index, 1); // Remove from list
+        await list.ListUsers[index].save(); // User change in database
         ctx.i18n.locale(list.language);
         try {
           await new ListView(ctx, list).send(true);

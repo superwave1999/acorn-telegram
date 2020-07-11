@@ -35,8 +35,10 @@ class ListView {
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
-        order += 1;
-        output += `${order}. [@${user.username}](tg://user?id=${user.userId})\n`;
+        if (!user.finished) {
+          order += 1;
+          output += `${order}. [@${user.username}](tg://user?id=${user.userId})\n`;
+        }
       });
     }
     return output;

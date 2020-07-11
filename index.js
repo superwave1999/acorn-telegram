@@ -7,7 +7,9 @@ const TelegrafI18n = require('telegraf-i18n');
 const rateLimit = require('telegraf-ratelimit');
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
 const applyRateLimit = require('./src/helpers/applyRateLimit');
+const cronCleanup = require('./src/cron/cleanup');
 const db = require('./src/database');
 const InitContext = require('./src/contexts/InitContext');
 const ListContext = require('./src/contexts/ListContext');
@@ -58,4 +60,9 @@ if (process.env.WEBHOOK) {
 } else {
   bot.startPolling();
   process.stdout.write('Server running in polling mode\n');
+}
+
+if (process.env.CRON_CLEANUP) {
+  cron.schedule(process.env.CRON_CLEANUP, () => cronCleanup(db), null);
+  process.stdout.write('Database will auto-clean\n');
 }

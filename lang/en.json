@@ -59,8 +59,10 @@
         "cancel": "Cancel"
       }
     },
-    "notify": "🌰 *Its your turn soon!*"
+    "notify": "🌰 *Its your turn soon!*",
+    "notifypin": "The island owner will send you the PIN shortly"
   },
   "ratelimit": "Rate limit exceeded, try again in a few seconds!",
-  "nopermission": "You don't have permission to perform that action"
+  "nopermission": "You don't have permission to perform that action",
+  "nousername": "You need a username to use lists.\nHave a look in Settings."
 }

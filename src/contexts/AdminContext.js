@@ -28,7 +28,7 @@ class AdminContext {
     const userId = ctx.from.id;
     const arr = [list.creatorId, list.associateId];
     let isAdmin = (arr.indexOf(userId) !== -1);
-    if (!isAdmin) {
+    if (!isAdmin && process.env.ADMIN_OPTIONS) {
       isAdmin = (await ctx.telegram.getChatMember(list.publicChatId, userId).status === ('creator' || 'administrator'));
     }
     return isAdmin;
@@ -183,7 +183,6 @@ class AdminContext {
       if (index >= 0) {
         list.ListUsers[index].finished = true; // Mark complete
         await list.ListUsers[index].save(); // Async save in database
-        list.ListUsers.splice(index, 1); // Remove from list
         ctx.i18n.locale(list.language);
         try {
           await new AdminView(ctx, list).sendUserList(true);

@@ -22,6 +22,7 @@
     "dotenv": "^8.2.0",
     "mariadb": "^2.4.1",
     "mysql2": "^2.1.0",
+    "node-cron": "^2.0.3",
     "sequelize": "^5.22.3",
     "sequelize-cli": "^5.5.1",
     "telegraf": "^3.38.0",

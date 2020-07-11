@@ -55,8 +55,10 @@ class AdminView {
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
-        order += 1;
-        keyboard.push([{ text: `${order}. @${user.username}`, callback_data: `manage_complete?forceId=${user.userId}` }]);
+        if (!user.finished) {
+          order += 1;
+          keyboard.push([{ text: `${order}. @${user.username}`, callback_data: `manage_complete?forceId=${user.userId}` }]);
+        }
       });
     }
     return { inline_keyboard: keyboard };
