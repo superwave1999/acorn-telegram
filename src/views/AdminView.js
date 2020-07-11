@@ -34,7 +34,7 @@ class AdminView {
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.lang'), callback_data: 'set_language' }]);
       this.ctx.i18n.locale(currentLang);
     }
-    if (this.data.assoiateId && this.ctx.from.id !== this.data.associateId) {
+    if (this.data.associateId && this.ctx.from.id !== this.data.associateId) {
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.assoc'), callback_data: 'remove_associate' }]);
     }
     if (this.data.isClosed) {
