@@ -21,16 +21,17 @@ class GeneralRepository {
     return this.db.List.findOne(query);
   }
 
-  getSingleFromChat(chatId, messageId, withUsers = true, onlyQueued = true) {
+  getSingleFromChat(chatId, messageId, withUsers = true, onlyQueued = true, onlyOpen = true) {
     const query = {
       where: {
-        // creatorId: userId,
-        isClosed: false,
         publicChatId: chatId,
         publicMessageId: messageId,
       },
       order: [['createdAt', 'DESC']],
     };
+    if (onlyOpen) {
+      query.where.isClosed = false;
+    }
     if (withUsers) {
       // Only display users that are still in the queue
       const userInclude = { model: this.db.ListUser, order: [['createdAt', 'ASC']], required: false };

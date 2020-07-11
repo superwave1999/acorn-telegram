@@ -14,6 +14,9 @@ class AdminView {
     let output = `${msgId}${this.data.id}\n`;
     output += `${this.ctx.i18n.t('view.admin.title')}\n`;
     output += `${this.ctx.i18n.t('view.admin.island', { island: this.data.island })}\n`;
+    if (this.data.associateId) {
+      output += this.ctx.i18n.t('view.admin.assoc');
+    }
     return output;
   }
 
@@ -30,6 +33,9 @@ class AdminView {
       this.ctx.i18n.locale(this.ctx.from.language_code);
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.lang'), callback_data: 'set_language' }]);
       this.ctx.i18n.locale(currentLang);
+    }
+    if (this.data.assoiateId && this.ctx.from.id !== this.data.associateId) {
+      keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.assoc'), callback_data: 'remove_associate' }]);
     }
     if (this.data.isClosed) {
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.unlock'), callback_data: 'manage_lock?state=0' }]);

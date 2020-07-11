@@ -1,7 +1,7 @@
 {
   "command": {
     "start": "¡Buenas! Cree su lista con /create",
-    "help": "1. /create tu listado\\n2. Envía el nombre de tu isla\\n3. Envía el precio\\n4. (Opcional) Configura el numero máximo de usuarios y las notificaciones\\n5. Envíalo a un grupo"
+    "help": "1. /create tu listado\n2. Envía el nombre de tu isla\n3. Envía el precio\n4. (Opcional) Configura el numero máximo de usuarios y las notificaciones\n5. Envíalo a un grupo\nTambién puedes enviarme un contacto durante el proceso para darle permisos de gestión"
   },
   "list": {
     "err": {
@@ -14,7 +14,8 @@
       "island": "(1/3) ¡Envíame el nombre de tu isla!",
       "price": "(2/3) Envíame el precio",
       "users": "Escriba el número máximo de usuarios (inclusive)",
-      "notification": "Deme el márgen de notificación\\n(ej: 4 - Se notificará al cuarto usuario de la lista por privado).\\n 0 desactiva"
+      "notification": "Deme el márgen de notificación\n(ej: 4 - Se notificará al cuarto usuario de la lista por privado).\n 0 desactiva",
+      "contact": "*${u}* asociado"
     },
     "cancel": {
       "main": "Cancelado",
@@ -25,9 +26,11 @@
     "admin": {
       "title": "🌰 *Menú de administración*",
       "island": "🏝️ _${island}_",
+      "assoc": "Con usuario asociado",
       "kb": {
         "manage": "Bloquear usuarios",
         "lang": "Utilizar mi idioma",
+        "assoc": "Quitar asociado",
         "unlock": "Abrir lista",
         "lock": "Cerrar lista",
         "return": "Volver"
@@ -58,5 +61,6 @@
     },
     "notify": "🌰 *¡Calienta que sales!*"
   },
-  "ratelimit": "Servidor saturado, prueba de nuevo en unos segundos."
+  "ratelimit": "Servidor saturado, prueba de nuevo en unos segundos",
+  "nopermission": "No tienes permisos para realizar esa acción"
 }

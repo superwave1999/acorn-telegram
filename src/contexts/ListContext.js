@@ -19,6 +19,7 @@ class ListContext {
     bot.action('set_max_users', (ctx) => this.actionSetMaxUsers(ctx));
     bot.action('set_notification', (ctx) => this.actionSetNotification(ctx));
     bot.action('cancel_creation', (ctx) => this.actionCancel(ctx));
+    bot.on('contact', (ctx) => this.contactHandler(ctx));
     // Listing
     bot.action('add_user', (ctx) => this.actionAddUser(ctx));
     bot.action('complete_user', (ctx) => this.actionCompleteUser(ctx));
@@ -44,6 +45,25 @@ class ListContext {
         ctx.reply(ctx.i18n.t('list.err.create'));
       } else {
         await this.handleMessageState(list, ctx);
+      }
+    }
+  }
+
+  /**
+   * Handles contact shares.
+   * @returns {Promise<void>}
+   */
+  async contactHandler(ctx) {
+    if (ctx.chat.type === 'private') {
+      const list = await this.queries.getSingleFromUserId(ctx.from.id);
+      if (list == null) {
+        ctx.reply(ctx.i18n.t('list.err.create'));
+      } else {
+        list.associateId = ctx.update.message.contact.user_id;
+        await list.save();
+        await ctx.reply(ctx.i18n.t('list.state.contact', { u: ctx.update.message.contact.first_name }), {
+          parse_mode: 'markdown',
+        });
       }
     }
   }
@@ -76,7 +96,7 @@ class ListContext {
       case this.STATE_PRICE:
         ctx.reply(ctx.i18n.t('list.state.price'));
         break;
-      case this.STATE_READY || this.STATE_MAX_USERS:
+      case this.STATE_READY:
         new Preview(ctx, q).sendPreview();
         break;
       case this.STATE_MAX_USERS:
@@ -98,14 +118,13 @@ class ListContext {
   async handleMessageState(q, ctx) {
     ctx.i18n.locale(q.language);
     const expectedMessage = ctx.message.text;
-    let q2 = null;
     switch (q.state) {
       case this.STATE_ISLAND:
         if (expectedMessage.length < 255) {
           q.island = expectedMessage;
           q.state = this.STATE_PRICE;
-          q2 = await q.save();
-          this.sendStateMessage(q2, ctx);
+          await q.save();
+          this.sendStateMessage(q, ctx);
         } else {
           ctx.reply(ctx.i18n.t('list.err.island'));
         }
@@ -114,19 +133,28 @@ class ListContext {
         if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_PRICE || 800)) {
           q.price = expectedMessage;
           q.state = this.STATE_READY;
-          q2 = await q.save();
-          this.sendStateMessage(q2, ctx);
+          await q.save();
+          this.sendStateMessage(q, ctx);
         } else {
           ctx.reply(ctx.i18n.t('list.err.price'));
         }
         break;
       case this.STATE_MAX_USERS:
-      case this.STATE_SET_NOTIFICATION:
         if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_LIST_USERS || 100)) {
           q.maxUsers = expectedMessage;
           q.state = this.STATE_READY;
-          q2 = await q.save();
-          this.sendStateMessage(q2, ctx);
+          await q.save();
+          this.sendStateMessage(q, ctx);
+        } else {
+          ctx.reply(ctx.i18n.t('list.err.number'));
+        }
+        break;
+      case this.STATE_SET_NOTIFICATION:
+        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_LIST_USERS || 100)) {
+          q.notification = expectedMessage;
+          q.state = this.STATE_READY;
+          await q.save();
+          this.sendStateMessage(q, ctx);
         } else {
           ctx.reply(ctx.i18n.t('list.err.number'));
         }
@@ -141,12 +169,12 @@ class ListContext {
    * @param ctx
    */
   async actionSetMaxUsers(ctx) {
-    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
       ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_MAX_USERS;
-      list = await list.save();
+      await list.save();
       this.sendStateMessage(list, ctx);
     }
   }
@@ -156,12 +184,12 @@ class ListContext {
    * @param ctx
    */
   async actionSetNotification(ctx) {
-    let list = await this.queries.getSingleFromUserId(ctx.from.id);
+    const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
       ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_SET_NOTIFICATION;
-      list = await list.save();
+      await list.save();
       this.sendStateMessage(list, ctx);
     }
   }

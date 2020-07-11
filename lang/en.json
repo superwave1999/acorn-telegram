@@ -1,7 +1,7 @@
 {
   "command": {
     "start": "Welcome! Create your listing with /create",
-    "help": "1. /create your listing\\n2. Send your island name\\n3. Send your price\\n4. (Optional) Set max users and notification\\n5. Send it to a group"
+    "help": "1. /create your listing\n2. Send your island name\n3. Send your price\n4. (Optional) Set max users and notification\n5. Send it to a group\nYou can also send me a contact during the process to give that user management privileges"
   },
   "list": {
     "err": {
@@ -14,7 +14,8 @@
       "island": "(1/3) Send me the name of your island!",
       "price": "(2/3) Now, please give me the price.",
       "users": "Give me the user limit (inclusive).",
-      "notification": "Give me the notification threshold\\n(eg: 4 - The fourth user will get a private notification).\\n 0 to disable."
+      "notification": "Give me the notification threshold\n(eg: 4 - The fourth user will get a private notification).\n 0 to disable.",
+      "contact": "User *${u}* set as associate"
     },
     "cancel": {
       "main": "Cancelled!",
@@ -25,9 +26,11 @@
     "admin": {
       "title": "🌰 *Administration menu*",
       "island": "🏝️ _${island}_",
+      "assoc": "With associate",
       "kb": {
         "manage": "Manage users",
         "lang": "Use my language",
+        "assoc": "Remove associate",
         "unlock": "Unlock list",
         "lock": "Lock list",
         "return": "Return"
@@ -58,5 +61,6 @@
     },
     "notify": "🌰 *Its your turn soon!*"
   },
-  "ratelimit": "Rate limit exceeded, try again in a few seconds!"
+  "ratelimit": "Rate limit exceeded, try again in a few seconds!",
+  "nopermission": "You don't have permission to perform that action"
 }
