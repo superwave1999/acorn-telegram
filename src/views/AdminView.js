@@ -13,7 +13,7 @@ class AdminView {
   render() {
     let output = `${msgId}${this.data.id}\n`;
     output += `${this.ctx.i18n.t('view.admin.title')}\n`;
-    output += `${this.ctx.i18n.t('view.admin.island')}_${this.data.island}_\n`;
+    output += `${this.ctx.i18n.t('view.admin.island', { island: this.data.island })}\n`;
     return output;
   }
 
@@ -24,6 +24,12 @@ class AdminView {
     const keyboard = [];
     if (this.data.ListUsers && this.data.ListUsers.length > 0) {
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.manage'), callback_data: 'manage_users' }]);
+    }
+    if (this.ctx.from.language_code !== this.data.language) {
+      const currentLang = this.ctx.i18n.locale();
+      this.ctx.i18n.locale(this.ctx.from.language_code);
+      keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.lang'), callback_data: 'set_language' }]);
+      this.ctx.i18n.locale(currentLang);
     }
     if (this.data.isClosed) {
       keyboard.push([{ text: this.ctx.i18n.t('view.admin.kb.unlock'), callback_data: 'manage_lock?state=0' }]);

@@ -24,21 +24,22 @@
   "view": {
     "admin": {
       "title": "🌰 *Menú de administración*",
-      "island": "🏝️ ",
+      "island": "🏝️ _${island}_",
       "kb": {
         "manage": "Bloquear usuarios",
-        "unlock": "Cerrar lista",
-        "lock": "Abrir lista",
+        "lang": "Utilizar mi idioma",
+        "unlock": "Abrir lista",
+        "lock": "Cerrar lista",
         "return": "Volver"
       }
     },
     "list": {
       "title": "🌰 *Listado de nabos*",
-      "price": "💰 ",
-      "island": "🏝️ ",
+      "price": "💰 ${price}",
+      "island": "🏝️ _${island}_",
       "users": {
         "limit": "🧍 ¡Límite alcanzado!",
-        "max": "🧍 Máximo: "
+        "max": "🧍 Máximo: ${max}"
       },
       "locked": "⚠️ *LISTA CERRADA*",
       "kb": {
@@ -49,8 +50,8 @@
     },
     "create": {
       "kb": {
-        "limit": "Límite usuarios",
-        "notify": "Notificación",
+        "limit": "Límite usuarios (${c})",
+        "notify": "Notificación (${c})",
         "send": "Enviar a grupo",
         "cancel": "Cancelar"
       }

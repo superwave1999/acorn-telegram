@@ -35,11 +35,11 @@ class PreviewView extends ListView {
       inline_keyboard: [
         [
           {
-            text: `${this.ctx.i18n.t('view.create.kb.limit')} (${this.data.maxUsers})`,
+            text: `${this.ctx.i18n.t('view.create.kb.limit', { c: this.data.maxUsers })}`,
             callback_data: 'set_max_users',
           },
           {
-            text: `${this.ctx.i18n.t('view.create.kb.notify')} (${this.data.notification})`,
+            text: `${this.ctx.i18n.t('view.create.kb.notify', { c: this.data.notification })}`,
             callback_data: 'set_notification',
           },
         ],

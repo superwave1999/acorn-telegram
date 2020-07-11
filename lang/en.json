@@ -24,9 +24,10 @@
   "view": {
     "admin": {
       "title": "🌰 *Administration menu*",
-      "island": "🏝️ ",
+      "island": "🏝️ _${island}_",
       "kb": {
         "manage": "Manage users",
+        "lang": "Use my language",
         "unlock": "Unlock list",
         "lock": "Lock list",
         "return": "Return"
@@ -34,11 +35,11 @@
     },
     "list": {
       "title": "🌰 *Trade listing*",
-      "price": "💰 ",
-      "island": "🏝️ ",
+      "price": "💰 ${price}",
+      "island": "🏝️ _${island}_",
       "users": {
         "limit": "🧍 Limit reached!",
-        "max": "🧍 Max: "
+        "max": "🧍 Max: ${max}"
       },
       "locked": "⚠️ *LISTING LOCKED*",
       "kb": {
@@ -49,8 +50,8 @@
     },
     "create": {
       "kb": {
-        "limit": "User limit",
-        "notify": "Notification",
+        "limit": "User limit (${c})",
+        "notify": "Notification (${c})",
         "send": "Send to group",
         "cancel": "Cancel"
       }

@@ -54,7 +54,7 @@ class ListContext {
    */
   async baseCommand(ctx) {
     if (ctx.chat.type === 'private') {
-      const created = await this.queries.createList(ctx.from);
+      const created = await this.queries.createList(ctx);
       if (created.length > 0) {
         this.sendStateMessage(created[0], ctx);
       }
@@ -198,7 +198,7 @@ class ListContext {
       if (message) {
         list.publicChatId = message.chat.id;
         list.publicMessageId = message.message_id;
-        list.save();
+        await list.save();
       }
     }
   }
@@ -218,7 +218,7 @@ class ListContext {
       if (!alreadyAdded && list.countUsers <= list.maxUsers && !list.isClosed) {
         const created = await this.listQueries.createUser(list.id, ctx.from);
         if (created) {
-          list.save(); // Save new user count
+          await list.save(); // Save new user count
           list.ListUsers.push(created);
           ctx.i18n.locale(created.language);
           await new ListView(ctx, list).send(true);
@@ -242,7 +242,7 @@ class ListContext {
       const index = list.ListUsers.findIndex((value) => value.userId === userId);
       if (index >= 0) {
         list.ListUsers[index].finished = true; // Mark complete
-        list.ListUsers[index].save(); // Async save in database
+        await list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
         ctx.i18n.locale(list.language);
         try {

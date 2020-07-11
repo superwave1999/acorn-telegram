@@ -24,7 +24,7 @@ module.exports = {
     },
     language: {
       allowNull: false,
-      type: Sequelize.STRING(4),
+      type: Sequelize.STRING(5),
     },
     island: {
       allowNull: true,

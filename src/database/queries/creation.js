@@ -8,10 +8,10 @@ class CreationRepository {
    * @param userObj
    * @returns {Promise<[Model, boolean]>}
    */
-  createList(userObj) {
+  createList(ctx) {
     const insert = {
-      creatorId: userObj.id,
-      language: userObj.language_code,
+      creatorId: ctx.from.id,
+      language: ctx.from.language_code,
       state: 0,
       maxUsers: 50,
       notification: 4,

@@ -12,12 +12,12 @@ class ListView {
   render() {
     let output = '';
     output += `${this.ctx.i18n.t('view.list.title')}\n`;
-    output += `${this.ctx.i18n.t('view.list.price')}${this.data.price}\n`;
-    output += `${this.ctx.i18n.t('view.list.island')}_${this.data.island}_\n`;
+    output += `${this.ctx.i18n.t('view.list.price', { price: this.data.price })}\n`;
+    output += `${this.ctx.i18n.t('view.list.island', { island: this.data.island })}\n`;
     if (this.data.countUsers > this.data.maxUsers) {
       output += `${this.ctx.i18n.t('view.list.users.limit')}\n`;
     } else {
-      output += `${this.ctx.i18n.t('view.list.users.max')}${this.data.maxUsers}\n`;
+      output += `${this.ctx.i18n.t('view.list.users.max', { max: this.data.maxUsers })}\n`;
     }
     output += this.renderUserRows();
     if (this.data.isClosed) {

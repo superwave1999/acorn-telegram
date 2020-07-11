@@ -12,6 +12,7 @@ class AdminContext {
     bot.action('manage_list', (ctx) => this.loadMenu(ctx));
     bot.action('refresh_list', (ctx) => this.loadMenuRefresh(ctx));
     bot.action('manage_users', (ctx) => this.userMenu(ctx));
+    bot.action('set_language', (ctx) => this.setLanguage(ctx));
     bot.action(/^manage_lock/, (ctx) => this.actionMenuLock(ctx));
     bot.action(/^manage_complete/, (ctx) => this.actionCompleteUser(ctx));
     return bot;
@@ -87,6 +88,27 @@ class AdminContext {
   }
 
   /**
+   * Set language
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async setLanguage(ctx) {
+    const listId = idParser(ctx.update.callback_query.message.text);
+    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    if (list !== null) {
+      list.language = ctx.from.language_code;
+      await list.save();
+      ctx.i18n.locale(list.language);
+      try {
+        await new AdminView(ctx, list).send(true);
+        await new ListView(ctx, list, true).send(true);
+      } catch (e) {
+        // Ignore...
+      }
+    }
+  }
+
+  /**
    * Management menu. Lock or unlock the list.
    * @param ctx
    * @returns {Promise<void>}
@@ -122,7 +144,7 @@ class AdminContext {
       const index = list.ListUsers.findIndex((value) => value.userId === userId);
       if (index >= 0) {
         list.ListUsers[index].finished = true; // Mark complete
-        list.ListUsers[index].save(); // Async save in database
+        await list.ListUsers[index].save(); // Async save in database
         list.ListUsers.splice(index, 1); // Remove from list
         ctx.i18n.locale(list.language);
         try {
