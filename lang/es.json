@@ -62,6 +62,16 @@
     "notify": "🌰 *¡Calienta que sales!*",
     "notifypin": "El dueño de la isla te mandará el PIN pronto"
   },
+  "alert": {
+    "err": {
+      "list": {
+        "invalid": "Lista cerrada o expirada.",
+        "add": "Ya estás, o has estado, en la lista.",
+        "remove": "No te he encontrado, o ya has estado, en la lista.",
+        "create": "Por algún motivo, no pude añadirte a la lista."
+      }
+    }
+  },
   "ratelimit": "Servidor saturado, prueba de nuevo en unos segundos",
   "nopermission": "No tienes permisos para realizar esa acción",
   "nousername": "Necesitas un nombre de usuario para utilizar la lista.\nEntra en Ajustes."

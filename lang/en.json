@@ -62,6 +62,16 @@
     "notify": "🌰 *Its your turn soon!*",
     "notifypin": "The island owner will send you the PIN shortly"
   },
+  "alert": {
+    "err": {
+      "list": {
+        "invalid": "List closed or expired.",
+        "add": "You already are, or have been, on the list.",
+        "remove": "I haven't found you on the list. You might have also been on it.",
+        "create": "For some reason, I couldn't add you to the list."
+      }
+    }
+  },
   "ratelimit": "Rate limit exceeded, try again in a few seconds!",
   "nopermission": "You don't have permission to perform that action",
   "nousername": "You need a username to use lists.\nHave a look in Settings."

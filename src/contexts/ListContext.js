@@ -36,8 +36,6 @@ class ListContext {
     if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
       if (ctx.message.text === `@${this.USERNAME} get`) {
         await this.convertCommand(ctx);
-      } else {
-        // TODO: no-op
       }
     } else {
       const list = await this.queries.getSingleFromUserId(ctx.from.id);
@@ -177,6 +175,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
+    await ctx.answerCbQuery();
   }
 
   /**
@@ -192,6 +191,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
+    await ctx.answerCbQuery();
   }
 
   /**
@@ -207,6 +207,7 @@ class ListContext {
     } else {
       ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
+    await ctx.answerCbQuery();
   }
 
   /**
@@ -251,12 +252,23 @@ class ListContext {
             await list.save(); // Save new user count
             list.ListUsers.push(created);
             ctx.i18n.locale(list.language);
-            await new ListView(ctx, list).send(true);
+            try {
+              await new ListView(ctx, list).send(true);
+            } catch (e) {
+              // Ignore...
+            }
+            await ctx.answerCbQuery();
+          } else {
+            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true);
           }
+        } else {
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true);
         }
+      } else {
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true);
       }
     } else {
-      await ctx.telegram.sendMessage(ctx.from.id, ctx.i18n.t('nousername'));
+      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true);
     }
   }
 
@@ -283,7 +295,12 @@ class ListContext {
         } catch (e) {
           // Ignore...
         }
+        await ctx.answerCbQuery();
+      } else {
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true);
       }
+    } else {
+      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true);
     }
   }
 }

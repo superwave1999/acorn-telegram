@@ -50,6 +50,9 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
+    } else {
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -68,9 +71,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -89,9 +93,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -113,9 +118,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -137,9 +143,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -162,9 +169,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 
@@ -192,9 +200,10 @@ class AdminContext {
           // Ignore...
         }
       }
+      await ctx.answerCbQuery();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.reply(ctx.i18n.t('nopermission'));
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
     }
   }
 }

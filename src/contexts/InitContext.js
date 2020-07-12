@@ -11,8 +11,6 @@ class InitContext {
   contextCommon(ctx, func) {
     if (ctx.chat.type === 'private') {
       func(ctx);
-    } else {
-      // TODO: Send no-op
     }
   }
 
