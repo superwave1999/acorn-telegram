@@ -1,6 +1,6 @@
 {
   "command": {
-    "start": "¡Buenas! Cree su lista con /create",
+    "start": "¡Buenas! Ya puede recibir mis notificaciones.\nTambien puede crear su lista con /create",
     "help": "1. /create tu listado\n2. Envía el nombre de tu isla\n3. Envía el precio\n4. (Opcional) Configura el numero máximo de usuarios y las notificaciones\n5. Envíalo a un grupo\nTambién puedes enviarme un contacto durante el proceso para darle permisos de gestión"
   },
   "list": {

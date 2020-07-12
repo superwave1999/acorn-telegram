@@ -1,6 +1,6 @@
 {
   "command": {
-    "start": "Welcome! Create your listing with /create",
+    "start": "Hi there! You can now receive my notifications.\n You can also create your listing with /create",
     "help": "1. /create your listing\n2. Send your island name\n3. Send your price\n4. (Optional) Set max users and notification\n5. Send it to a group\nYou can also send me a contact during the process to give that user management privileges"
   },
   "list": {
