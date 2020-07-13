@@ -73,13 +73,13 @@ class ListContext {
   async baseCommand(ctx) {
     if (ctx.chat.type === 'private') {
       const existing = await this.queries.getSingleFromUserId(ctx.from.id);
-      if (!existing) {
-        const created = await this.queries.createList(ctx);
-        if (created) {
-          await this.sendStateMessage(created[0], ctx);
-        }
-      } else {
-        await ctx.reply(ctx.i18n.t('list.err.creating'));
+      if (existing) {
+        await existing.destroy();
+      }
+      const created = await this.queries.createList(ctx);
+      if (created) {
+        await created.reload();
+        await this.sendStateMessage(created, ctx);
       }
     }
   }
@@ -94,19 +94,19 @@ class ListContext {
     ctx.i18n.locale(q.language);
     switch (q.state) {
       case this.STATE_ISLAND:
-        ctx.reply(ctx.i18n.t('list.state.island'));
+        await ctx.reply(ctx.i18n.t('list.state.island'));
         break;
       case this.STATE_PRICE:
-        ctx.reply(ctx.i18n.t('list.state.price'));
+        await ctx.reply(ctx.i18n.t('list.state.price'));
         break;
       case this.STATE_READY:
         await new Preview(ctx, q).sendPreview();
         break;
       case this.STATE_MAX_USERS:
-        ctx.reply(ctx.i18n.t('list.state.users'));
+        await ctx.reply(ctx.i18n.t('list.state.users'));
         break;
       case this.STATE_SET_NOTIFICATION:
-        ctx.reply(ctx.i18n.t('list.state.notification'));
+        await ctx.reply(ctx.i18n.t('list.state.notification'));
         break;
       default:
         break;
@@ -127,9 +127,9 @@ class ListContext {
           q.island = expectedMessage;
           q.state = this.STATE_PRICE;
           await q.save();
-          this.sendStateMessage(q, ctx);
+          await this.sendStateMessage(q, ctx);
         } else {
-          ctx.reply(ctx.i18n.t('list.err.island'));
+          await ctx.reply(ctx.i18n.t('list.err.island'));
         }
         break;
       case this.STATE_PRICE:
@@ -139,12 +139,12 @@ class ListContext {
             q.price = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            this.sendStateMessage(q, ctx);
+            await this.sendStateMessage(q, ctx);
           } else {
-            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
           }
         } else {
-          ctx.reply(ctx.i18n.t('list.err.number'));
+          await ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       case this.STATE_MAX_USERS:
@@ -154,12 +154,12 @@ class ListContext {
             q.maxUsers = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            this.sendStateMessage(q, ctx);
+            await this.sendStateMessage(q, ctx);
           } else {
-            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
           }
         } else {
-          ctx.reply(ctx.i18n.t('list.err.number'));
+          await ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       case this.STATE_SET_NOTIFICATION:
@@ -169,12 +169,12 @@ class ListContext {
             q.notification = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            this.sendStateMessage(q, ctx);
+            await this.sendStateMessage(q, ctx);
           } else {
-            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
           }
         } else {
-          ctx.reply(ctx.i18n.t('list.err.number'));
+          await ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       default:
@@ -189,7 +189,7 @@ class ListContext {
   async actionSetMaxUsers(ctx) {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      ctx.reply(ctx.i18n.t('list.err.create'));
+      await ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_MAX_USERS;
       await list.save();
@@ -205,7 +205,7 @@ class ListContext {
   async actionSetNotification(ctx) {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      ctx.reply(ctx.i18n.t('list.err.create'));
+      await ctx.reply(ctx.i18n.t('list.err.create'));
     } else {
       list.state = this.STATE_SET_NOTIFICATION;
       await list.save();
@@ -221,11 +221,11 @@ class ListContext {
   async actionCancel(ctx) {
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
-      ctx.i18n.locale(list.language);
+      await ctx.i18n.locale(list.language);
       await list.destroy();
-      ctx.reply(ctx.i18n.t('list.cancel.main'));
+      await ctx.reply(ctx.i18n.t('list.cancel.main'));
     } else {
-      ctx.reply(ctx.i18n.t('list.cancel.none'));
+      await ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
     await ctx.answerCbQuery().catch(() => {});
   }
