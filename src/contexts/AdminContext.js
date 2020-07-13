@@ -50,9 +50,9 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -71,10 +71,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -93,10 +93,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -118,10 +118,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -143,10 +143,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -169,10 +169,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 
@@ -199,10 +199,10 @@ class AdminContext {
           // Ignore...
         }
       }
-      await ctx.answerCbQuery().catch();
+      await ctx.answerCbQuery().catch(() => {});
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
     }
   }
 }

@@ -190,7 +190,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
-    await ctx.answerCbQuery().catch();
+    await ctx.answerCbQuery().catch(() => {});
   }
 
   /**
@@ -206,7 +206,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
-    await ctx.answerCbQuery().catch();
+    await ctx.answerCbQuery().catch(() => {});
   }
 
   /**
@@ -222,7 +222,7 @@ class ListContext {
     } else {
       ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
-    await ctx.answerCbQuery().catch();
+    await ctx.answerCbQuery().catch(() => {});
   }
 
   /**
@@ -273,24 +273,24 @@ class ListContext {
                 } catch (e) {
                   // Ignore...
                 }
-                await ctx.answerCbQuery().catch();
+                await ctx.answerCbQuery().catch(() => {});
               } else {
-                await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch();
+                await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch(() => {});
               }
             } else {
-              await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.limit'), true).catch();
+              await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.limit'), true).catch(() => {});
             }
           } else {
-            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true).catch();
+            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true).catch(() => {});
           }
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch();
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch();
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true).catch(() => {});
     }
   }
 
@@ -317,15 +317,15 @@ class ListContext {
           } catch (e) {
             // Ignore...
           }
-          await ctx.answerCbQuery().catch();
+          await ctx.answerCbQuery().catch(() => {});
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch();
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {});
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch();
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch();
+      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
     }
   }
 }
