@@ -3,28 +3,25 @@ const ListView = require('./ListView');
 class PreviewView extends ListView {
   /**
    * Send a preview.
-   * @param ctx
    * @param update
    * @param newData
    */
-  sendPreview(update = false, newData = null) {
-    let message = null;
+  async sendPreview(update = false, newData = null) {
     if (newData) {
       this.data = newData;
     }
     const markup = this.markupPreview();
     if (update) {
-      message = this.ctx.editMessageText(this.render(), {
+      await this.ctx.editMessageText(this.render(), {
         parse_mode: 'Markdown',
         reply_markup: markup,
       }).catch();
     } else {
-      message = this.ctx.reply(this.render(), {
+      await this.ctx.reply(this.render(), {
         parse_mode: 'Markdown',
         reply_markup: markup,
       });
     }
-    return message;
   }
 
   /**

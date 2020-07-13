@@ -8,7 +8,8 @@
       "create": "Antes de nada, ejecuta /create",
       "island": "¡Nombre demasiado largo!",
       "price": "No has introducido un número válido",
-      "number": "Introduce un número"
+      "number": "Introduce un número",
+      "numbermin": "El número introducido supera el límite de *${n}*"
     },
     "state": {
       "island": "(1/3) ¡Envíame el nombre de tu isla!",
@@ -65,8 +66,10 @@
   "alert": {
     "err": {
       "list": {
-        "invalid": "Lista cerrada o expirada.",
+        "invalid": "Lista expirada.",
+        "closed": "Lista cerrada.",
         "add": "Ya estás, o has estado, en la lista.",
+        "limit": "Límite de usuarios alcanzado.",
         "remove": "No te he encontrado, o ya has estado, en la lista.",
         "create": "Por algún motivo, no pude añadirte a la lista."
       }

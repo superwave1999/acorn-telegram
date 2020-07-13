@@ -6,6 +6,7 @@ const CleanupRepository = require('../database/queries/cleanup');
  * @param db
  */
 module.exports = async (db) => {
+  await new CleanupRepository(db).getStaleLists(true);
   process.stdout.write('Database pruned!\n');
-  return new CleanupRepository(db).getStaleLists(true);
+  return true;
 };

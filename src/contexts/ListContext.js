@@ -85,7 +85,7 @@ class ListContext {
    * @param ctx
    * @returns {null}
    */
-  sendStateMessage(q, ctx) {
+  async sendStateMessage(q, ctx) {
     ctx.i18n.locale(q.language);
     switch (q.state) {
       case this.STATE_ISLAND:
@@ -95,7 +95,7 @@ class ListContext {
         ctx.reply(ctx.i18n.t('list.state.price'));
         break;
       case this.STATE_READY:
-        new Preview(ctx, q).sendPreview();
+        await new Preview(ctx, q).sendPreview();
         break;
       case this.STATE_MAX_USERS:
         ctx.reply(ctx.i18n.t('list.state.users'));
@@ -128,31 +128,46 @@ class ListContext {
         }
         break;
       case this.STATE_PRICE:
-        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_PRICE || 800)) {
-          q.price = expectedMessage;
-          q.state = this.STATE_READY;
-          await q.save();
-          this.sendStateMessage(q, ctx);
+        if (/^\d+$/.test(expectedMessage)) {
+          const max = Number(process.env.MAX_PRICE || 800);
+          if (Number(expectedMessage) <= max) {
+            q.price = expectedMessage;
+            q.state = this.STATE_READY;
+            await q.save();
+            this.sendStateMessage(q, ctx);
+          } else {
+            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+          }
         } else {
-          ctx.reply(ctx.i18n.t('list.err.price'));
+          ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       case this.STATE_MAX_USERS:
-        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_LIST_USERS || 100)) {
-          q.maxUsers = expectedMessage;
-          q.state = this.STATE_READY;
-          await q.save();
-          this.sendStateMessage(q, ctx);
+        if (/^\d+$/.test(expectedMessage)) {
+          const max = Number(process.env.MAX_LIST_USERS || 100);
+          if (Number(expectedMessage) <= max) {
+            q.maxUsers = expectedMessage;
+            q.state = this.STATE_READY;
+            await q.save();
+            this.sendStateMessage(q, ctx);
+          } else {
+            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+          }
         } else {
           ctx.reply(ctx.i18n.t('list.err.number'));
         }
         break;
       case this.STATE_SET_NOTIFICATION:
-        if (/^\d+$/.test(expectedMessage) && Number(expectedMessage) <= Number(process.env.MAX_LIST_USERS || 100)) {
-          q.notification = expectedMessage;
-          q.state = this.STATE_READY;
-          await q.save();
-          this.sendStateMessage(q, ctx);
+        if (/^\d+$/.test(expectedMessage)) {
+          const max = Number(process.env.MAX_LIST_USERS || 100);
+          if (Number(expectedMessage) <= max) {
+            q.notification = expectedMessage;
+            q.state = this.STATE_READY;
+            await q.save();
+            this.sendStateMessage(q, ctx);
+          } else {
+            ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+          }
         } else {
           ctx.reply(ctx.i18n.t('list.err.number'));
         }
@@ -175,7 +190,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
-    await ctx.answerCbQuery();
+    await ctx.answerCbQuery().catch();
   }
 
   /**
@@ -191,7 +206,7 @@ class ListContext {
       await list.save();
       this.sendStateMessage(list, ctx);
     }
-    await ctx.answerCbQuery();
+    await ctx.answerCbQuery().catch();
   }
 
   /**
@@ -207,7 +222,7 @@ class ListContext {
     } else {
       ctx.reply(ctx.i18n.t('list.cancel.none'));
     }
-    await ctx.answerCbQuery();
+    await ctx.answerCbQuery().catch();
   }
 
   /**
@@ -242,65 +257,75 @@ class ListContext {
     if (ctx.from.username && ctx.from.username.length > 0) {
       const chatId = ctx.chat.id;
       const messageId = ctx.update.callback_query.message.message_id;
-      const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, false);
+      const list = await this.listQueries.getSingleFromChat(chatId, messageId);
       if (list !== null) {
-        const alreadyAdded = list.ListUsers.some((value) => value.userId === ctx.from.id);
-        list.countUsers += 1; // Increments possible count
-        if (!alreadyAdded && list.countUsers <= list.maxUsers && !list.isClosed) {
-          const created = await this.listQueries.createUser(list.id, ctx.from);
-          if (created) {
-            await list.save(); // Save new user count
-            list.ListUsers.push(created);
-            ctx.i18n.locale(list.language);
-            try {
-              await new ListView(ctx, list).send(true);
-            } catch (e) {
-              // Ignore...
+        if (!list.isClosed) {
+          if (!list.ListUsers.some((value) => value.userId === ctx.from.id)) {
+            list.countUsers += 1;
+            if (list.countUsers <= list.maxUsers) {
+              const created = await this.listQueries.createUser(list.id, ctx.from);
+              if (created) {
+                await list.save(); // Save new user count
+                list.ListUsers.push(created);
+                ctx.i18n.locale(list.language);
+                try {
+                  await new ListView(ctx, list).send(true);
+                } catch (e) {
+                  // Ignore...
+                }
+                await ctx.answerCbQuery().catch();
+              } else {
+                await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch();
+              }
+            } else {
+              await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.limit'), true).catch();
             }
-            await ctx.answerCbQuery();
           } else {
-            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true);
+            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true).catch();
           }
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true);
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch();
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true);
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch();
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true).catch();
     }
   }
 
   /**
    * Mark user as complete.
    * @param ctx
-   * @param forceId
    * @returns {Promise<void>}
    */
   async actionCompleteUser(ctx) {
     const userId = ctx.from.id;
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
-    const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, false);
-    if (list !== null && !list.isClosed) {
-      const index = list.ListUsers.findIndex((value) => value.userId === userId);
-      if (index >= 0) {
-        list.ListUsers[index].finished = true; // Mark complete
-        await list.ListUsers[index].save(); // User change in database
-        ctx.i18n.locale(list.language);
-        try {
-          await new ListView(ctx, list).send(true);
-          await new NotificationView(ctx, list).send();
-        } catch (e) {
-          // Ignore...
+    const list = await this.listQueries.getSingleFromChat(chatId, messageId);
+    if (list !== null) {
+      if (!list.isClosed) {
+        const index = list.ListUsers.findIndex((value) => value.userId === userId);
+        if (index >= 0 && !list.ListUsers[index].finished) {
+          list.ListUsers[index].finished = true; // Mark complete
+          await list.ListUsers[index].save(); // User change in database
+          ctx.i18n.locale(list.language);
+          try {
+            await new ListView(ctx, list).send(true);
+            await new NotificationView(ctx, list).send();
+          } catch (e) {
+            // Ignore...
+          }
+          await ctx.answerCbQuery().catch();
+        } else {
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch();
         }
-        await ctx.answerCbQuery();
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true);
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch();
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch();
     }
   }
 }

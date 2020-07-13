@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define(
     userId: DataTypes.BIGINT.UNSIGNED,
     username: DataTypes.STRING,
     finished: DataTypes.BOOLEAN,
+    notified: DataTypes.BOOLEAN,
   },
   {},
 );

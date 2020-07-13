@@ -42,7 +42,7 @@ class AdminContext {
   async loadMenu(ctx) {
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
-    const list = await this.listQueries.getSingleFromChat(chatId, messageId, true, true, false);
+    const list = await this.listQueries.getSingleFromChat(chatId, messageId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
@@ -50,9 +50,9 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
@@ -63,7 +63,7 @@ class AdminContext {
    */
   async loadMenuRefresh(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
@@ -71,10 +71,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
@@ -85,7 +85,7 @@ class AdminContext {
    */
   async userMenu(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
@@ -93,10 +93,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
@@ -107,7 +107,7 @@ class AdminContext {
    */
   async setLanguage(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       list.language = ctx.from.language_code;
       await list.save();
@@ -118,10 +118,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
@@ -132,7 +132,7 @@ class AdminContext {
    */
   async actionRemoveAssociate(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       list.associateId = null;
       await list.save();
@@ -143,10 +143,10 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
@@ -158,7 +158,7 @@ class AdminContext {
   async actionMenuLock(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
     const setClosed = parseInt(urlParser(ctx.update.callback_query.data, 'state') || '1', 10);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       list.isClosed = setClosed;
       await list.save();
@@ -169,23 +169,22 @@ class AdminContext {
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 
   /**
    * Mark user as complete.
    * @param ctx
-   * @param forceId
    * @returns {Promise<void>}
    */
   async actionCompleteUser(ctx) {
     const listId = idParser(ctx.update.callback_query.message.text);
     const userId = parseInt(urlParser(ctx.update.callback_query.data, 'forceId'), 10);
-    const list = await this.listQueries.getSingleFromId(listId, true, true);
+    const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       const index = list.ListUsers.findIndex((value) => value.userId === userId);
       if (index >= 0) {
@@ -200,10 +199,10 @@ class AdminContext {
           // Ignore...
         }
       }
-      await ctx.answerCbQuery();
+      await ctx.answerCbQuery().catch();
     } else {
       await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch();
     }
   }
 }

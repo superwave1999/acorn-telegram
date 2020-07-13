@@ -1,7 +1,8 @@
 /**
  * Gets query vars from callback_data
- * @param original
- * @returns {{publicChatId: (*|string), publicMessageId: (*|string)}}
+ * @returns {null}
+ * @param query
+ * @param variable
  */
 module.exports = (query, variable) => {
   const sep = query.split('?');

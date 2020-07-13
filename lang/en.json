@@ -8,7 +8,8 @@
       "create": "Execute /create first!",
       "island": "Island name too long!",
       "price": "Please provide a valid number!",
-      "number": "Please provide a number!"
+      "number": "Please provide a number!",
+      "numbermin": "The given number is over the limit of *${n}*"
     },
     "state": {
       "island": "(1/3) Send me the name of your island!",
@@ -65,8 +66,10 @@
   "alert": {
     "err": {
       "list": {
-        "invalid": "List closed or expired.",
+        "invalid": "List expired.",
+        "closed": "List closed.",
         "add": "You already are, or have been, on the list.",
+        "limit": "User limit reached.",
         "remove": "I haven't found you on the list. You might have also been on it.",
         "create": "For some reason, I couldn't add you to the list."
       }

@@ -1,54 +1,63 @@
 class GeneralRepository {
   constructor(db) {
     this.db = db;
+    this.order = [['createdAt', 'DESC']];
+    this.include = [
+      {
+        model: this.db.ListUser,
+        order: [['createdAt', 'ASC']],
+        required: false,
+      },
+    ];
   }
 
-  getSingleFromId(listId, withUsers = true, onlyQueued = true) {
+  /**
+   * Get list from id only.
+   * @param listId
+   * @returns {Promise<Model | null> | Promise<Model>}
+   */
+  getSingleFromId(listId) {
     const query = {
       where: {
         id: listId,
       },
-      order: [['createdAt', 'DESC']],
+      order: this.order,
+      include: this.include,
     };
-    if (withUsers) {
-      // Only display users that are still in the queue
-      const userInclude = { model: this.db.ListUser, order: [['createdAt', 'ASC']], required: false };
-      if (onlyQueued) {
-        userInclude.where = { finished: false };
-      }
-      query.include = [userInclude];
-    }
     return this.db.List.findOne(query);
   }
 
-  getSingleFromChat(chatId, messageId, withUsers = true, onlyQueued = true, onlyOpen = true) {
+  /**
+   * Get list from chat/message pair.
+   * @param chatId
+   * @param messageId
+   * @returns {Promise<Model | null> | Promise<Model>}
+   */
+  getSingleFromChat(chatId, messageId) {
     const query = {
       where: {
         publicChatId: chatId,
         publicMessageId: messageId,
       },
-      order: [['createdAt', 'DESC']],
+      order: this.order,
+      include: this.include,
     };
-    if (onlyOpen) {
-      query.where.isClosed = false;
-    }
-    if (withUsers) {
-      // Only display users that are still in the queue
-      const userInclude = { model: this.db.ListUser, order: [['createdAt', 'ASC']], required: false };
-      if (onlyQueued) {
-        userInclude.where = { finished: false };
-      }
-      query.include = [userInclude];
-    }
     return this.db.List.findOne(query);
   }
 
+  /**
+   * Add user to list.
+   * @param listId
+   * @param user
+   * @returns {params}
+   */
   createUser(listId, user) {
     const params = {
-      finished: false,
       listId,
       userId: user.id,
       username: user.username,
+      finished: false,
+      notified: false,
     };
     return this.db.ListUser.create(params);
   }

@@ -25,7 +25,11 @@ module.exports = {
     },
     finished: {
       type: Sequelize.BOOLEAN,
-      defaultValue: 0,
+      defaultValue: false,
+    },
+    notified: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
     createdAt: {
       allowNull: false,

@@ -59,9 +59,7 @@ class ListView {
 
   /**
    * Send it.
-   * @param ctx
    * @param update
-   * @param adminMenu
    * @param newData
    */
   send(update = false, newData = null) {

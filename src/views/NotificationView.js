@@ -17,22 +17,25 @@ class NotificationView {
 
   /**
    * Send the notification.
-   * @param ctx
    */
-  send() {
-    let message = null;
+  async send() {
+    const results = [];
+    const saves = [];
     if (this.data.notification > 0 && this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
         if (!user.finished) {
           order += 1;
-          if (this.data.notification === order) {
-            message = this.ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' });
+          if (!user.notified && this.data.notification === order) {
+            results.push(this.ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' }));
+            user.notified = true;
+            saves.push(user.save());
           }
         }
       });
     }
-    return message;
+    await Promise.all(results);
+    await Promise.all(saves);
   }
 }
 

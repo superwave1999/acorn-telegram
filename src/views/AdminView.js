@@ -66,19 +66,17 @@ class AdminView {
 
   /**
    * Send it.
-   * @param ctx
    * @param withKeyboard
    * @param update
    */
-  send(withKeyboard = true, update = false) {
-    let message = null;
+  async send(withKeyboard = true, update = false) {
     let keyboard = null;
     if (withKeyboard) {
       keyboard = this.markup();
     }
     if (update) {
       try {
-        message = this.ctx.editMessageText(this.render(), {
+        await this.ctx.editMessageText(this.render(), {
           parse_mode: 'markdown',
           reply_markup: keyboard,
         });
@@ -86,29 +84,25 @@ class AdminView {
         // Ignore...
       }
     } else {
-      message = this.ctx.telegram.sendMessage(this.ctx.from.id, this.render(), { parse_mode: 'Markdown', reply_markup: keyboard });
+      await this.ctx.telegram.sendMessage(this.ctx.from.id, this.render(), { parse_mode: 'Markdown', reply_markup: keyboard });
     }
-    return message;
   }
 
   /**
    * Send user list.
-   * @param ctx
    * @param update
    */
-  sendUserList(update = false) {
-    let message = null;
+  async sendUserList(update = false) {
     const markup = this.userKeyboardMarkup();
     if (update) {
       try {
-        message = this.ctx.editMessageText(this.render(), { parse_mode: 'markdown', reply_markup: markup });
+        await this.ctx.editMessageText(this.render(), { parse_mode: 'markdown', reply_markup: markup });
       } catch (e) {
         // Ignore...
       }
     } else {
-      message = this.ctx.reply(this.render(), { parse_mode: 'markdown', reply_markup: markup });
+      await this.ctx.reply(this.render(), { parse_mode: 'markdown', reply_markup: markup });
     }
-    return message;
   }
 }
 

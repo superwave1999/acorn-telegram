@@ -19,7 +19,7 @@ class CleanupRepository {
       },
     };
     if (del) {
-      return this.db.List.destroy(query, true);
+      return this.db.List.destroy(query);
     }
     return this.db.List.findAll(query);
   }
