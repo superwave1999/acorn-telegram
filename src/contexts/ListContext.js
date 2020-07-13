@@ -72,9 +72,14 @@ class ListContext {
    */
   async baseCommand(ctx) {
     if (ctx.chat.type === 'private') {
-      const created = await this.queries.createList(ctx);
-      if (created.length > 0) {
-        this.sendStateMessage(created[0], ctx);
+      const existing = await this.queries.getSingleFromUserId(ctx.from.id);
+      if (!existing) {
+        const created = await this.queries.createList(ctx);
+        if (created) {
+          await this.sendStateMessage(created[0], ctx);
+        }
+      } else {
+        await ctx.reply(ctx.i18n.t('list.err.creating'));
       }
     }
   }

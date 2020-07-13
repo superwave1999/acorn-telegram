@@ -13,7 +13,7 @@ class CreationRepository {
       creatorId: ctx.from.id,
       language: ctx.from.language_code,
     };
-    return this.db.List.findOrCreate({ where: insert });
+    return this.db.List.create(insert);
   }
 
   /**
