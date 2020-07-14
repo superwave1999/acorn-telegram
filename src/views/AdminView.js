@@ -55,8 +55,8 @@ class AdminView {
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
+        order += 1;
         if (user.state === 0) {
-          order += 1;
           keyboard.push([
             { text: `${order} @${user.username} ✅`, callback_data: `manage_complete?forceId=${user.userId}` },
             { text: `${order} @${user.username} ❌`, callback_data: `manage_leave?forceId=${user.userId}` },
