@@ -59,7 +59,7 @@ class ListView {
         [{ text: this.ctx.i18n.t('view.list.kb.add'), callback_data: 'add_user' }],
         [
           { text: this.ctx.i18n.t('view.list.kb.complete'), callback_data: 'complete_user' },
-          { text: this.ctx.i18n.t('view.list.kb.leave'), callback_data: 'leave_user' }
+          { text: this.ctx.i18n.t('view.list.kb.leave'), callback_data: 'leave_user' },
         ],
         [{ text: this.ctx.i18n.t('view.list.kb.options'), callback_data: 'manage_list' }],
       ],
