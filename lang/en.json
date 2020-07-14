@@ -8,7 +8,7 @@
       "create": "Execute /create first!",
       "island": "Island name too long!",
       "price": "Please provide a valid number!",
-      "number": "Please provide a number!",
+      "number": "Please provide a positive round number!",
       "numbermin": "The given number is over the limit of *${n}*"
     },
     "state": {

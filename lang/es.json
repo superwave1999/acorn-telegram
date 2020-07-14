@@ -8,7 +8,7 @@
       "create": "Antes de nada, ejecuta /create",
       "island": "¡Nombre demasiado largo!",
       "price": "No has introducido un número válido",
-      "number": "Introduce un número",
+      "number": "Introduce un número entero positivo",
       "numbermin": "El número introducido supera el límite de *${n}*"
     },
     "state": {
