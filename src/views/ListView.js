@@ -35,10 +35,10 @@ class ListView {
     if (this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
-        if (!user.finished) {
-          order += 1;
-          output += `${order}. [@${user.username}](tg://user?id=${user.userId})\n`;
-        }
+        order += 1;
+        output += `*${order}* `;
+        output += (user.finished) ? '✅' : '🟨';
+        output += ` [@${user.username}](tg://user?id=${user.userId})\n`;
       });
     }
     return output;
