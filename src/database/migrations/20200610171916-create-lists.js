@@ -32,26 +32,26 @@ module.exports = {
     },
     price: {
       allowNull: true,
-      type: Sequelize.INTEGER(4),
+      type: Sequelize.INTEGER(4).UNSIGNED,
     },
     notification: {
       allowNull: false,
-      type: Sequelize.INTEGER(4),
+      type: Sequelize.INTEGER(4).UNSIGNED,
       defaultValue: 4,
     },
     maxUsers: {
       allowNull: false,
-      type: Sequelize.INTEGER(4),
+      type: Sequelize.INTEGER(4).UNSIGNED,
       defaultValue: 50,
     },
     countUsers: {
       allowNull: true,
-      type: Sequelize.INTEGER(4),
+      type: Sequelize.INTEGER(4).UNSIGNED,
       defaultValue: 0,
     },
     state: {
       allowNull: false,
-      type: Sequelize.INTEGER(1),
+      type: Sequelize.INTEGER(1).UNSIGNED,
       defaultValue: 0,
     },
     isClosed: {
