@@ -56,7 +56,7 @@ class GeneralRepository {
       listId,
       userId: user.id,
       username: user.username,
-      finished: false,
+      state: 0,
       notified: false,
     };
     return this.db.ListUser.create(params);

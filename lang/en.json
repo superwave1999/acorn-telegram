@@ -48,7 +48,8 @@
       "locked": "⚠ *LISTING LOCKED*",
       "kb": {
         "add": "I'm going",
-        "complete": "✅ Done",
+        "complete": "✅ Visited",
+        "leave": "❌ Not going",
         "options": "Options"
       }
     },
@@ -67,7 +68,8 @@
     "msg": {
       "list": {
         "joined": "You joined the queue.",
-        "removed": "You left the queue."
+        "removed": "You left the queue.",
+        "completed": "You visited the island."
       }
     },
     "err": {
@@ -76,7 +78,7 @@
         "closed": "Queue closed.",
         "add": "You are already in the queue.",
         "limit": "User limit reached.",
-        "remove": "You already left the queue.",
+        "remove": "You must be in queue to do this.",
         "create": "For some reason, I couldn't add you to the queue."
       }
     }

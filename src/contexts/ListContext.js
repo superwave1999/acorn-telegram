@@ -23,6 +23,7 @@ class ListContext {
     // Listing
     bot.action('add_user', (ctx) => this.actionAddUser(ctx));
     bot.action('complete_user', (ctx) => this.actionCompleteUser(ctx));
+    bot.action('leave_user', (ctx) => this.actionLeaveUser(ctx));
     // Both
     bot.on('text', (ctx) => this.messageHandler(ctx));
     return bot;
@@ -311,9 +312,44 @@ class ListContext {
     if (list !== null) {
       if (!list.isClosed) {
         const index = list.ListUsers.findIndex((value) => value.userId === userId);
-        if (index >= 0 && !list.ListUsers[index].finished) {
-          list.ListUsers[index].finished = true; // Mark complete
-          await list.ListUsers[index].save(); // User change in database
+        if (index >= 0 && list.ListUsers[index].state === 0) {
+          list.ListUsers[index].state = 1; // Mark complete
+          await list.ListUsers[index].save();
+          ctx.i18n.locale(list.language);
+          try {
+            await new ListView(ctx, list).send(true);
+            await new NotificationView(ctx, list).send();
+          } catch (e) {
+            // Ignore...
+          }
+          await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.completed')).catch(() => {});
+        } else {
+          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {});
+        }
+      } else {
+        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
+      }
+    } else {
+      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
+    }
+  }
+
+  /**
+   * Mark user as not going.
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async actionLeaveUser(ctx) {
+    const userId = ctx.from.id;
+    const chatId = ctx.chat.id;
+    const messageId = ctx.update.callback_query.message.message_id;
+    const list = await this.listQueries.getSingleFromChat(chatId, messageId);
+    if (list !== null) {
+      if (!list.isClosed) {
+        const index = list.ListUsers.findIndex((value) => value.userId === userId);
+        if (index >= 0 && list.ListUsers[index].state === 0) {
+          list.ListUsers[index].state = -1; // Mark not going
+          await list.ListUsers[index].save();
           ctx.i18n.locale(list.language);
           try {
             await new ListView(ctx, list).send(true);

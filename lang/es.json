@@ -48,8 +48,9 @@
       "locked": "⚠ *LISTA CERRADA*",
       "kb": {
         "add": "¡Voy!",
-        "complete": "✅ Ya he ido",
-        "options": "Menú admin"
+        "complete": "✅ Visitado",
+        "leave": "❌ No voy",
+        "options": "Opciones"
       }
     },
     "create": {
@@ -67,7 +68,8 @@
     "msg": {
       "list": {
         "joined": "Has entrado en la cola.",
-        "removed": "Te has salido de la cola."
+        "removed": "Te has salido de la cola.",
+        "completed": "Visitaste la isla."
       }
     },
     "err": {
@@ -76,7 +78,7 @@
         "closed": "Cola cerrada.",
         "add": "Ya estás en la cola.",
         "limit": "Límite de usuarios alcanzado.",
-        "remove": "Ya te has dado de baja de la cola.",
+        "remove": "Debes estar en la cola para hacer esto.",
         "create": "Por algún motivo, no pude añadirte a la cola."
       }
     }

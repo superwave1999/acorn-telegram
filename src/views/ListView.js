@@ -37,7 +37,13 @@ class ListView {
       this.data.ListUsers.forEach((user) => {
         order += 1;
         output += `*${order}* `;
-        output += (user.finished) ? '✅' : '🟨';
+        if (user.state === 1) {
+          output += '✅';
+        } else if (user.state === -1) {
+          output += '❌';
+        } else {
+          output += '🟨';
+        }
         output += ` [@${user.username}](tg://user?id=${user.userId})\n`;
       });
     }
@@ -51,7 +57,10 @@ class ListView {
     return {
       inline_keyboard: [
         [{ text: this.ctx.i18n.t('view.list.kb.add'), callback_data: 'add_user' }],
-        [{ text: this.ctx.i18n.t('view.list.kb.complete'), callback_data: 'complete_user' }],
+        [
+          { text: this.ctx.i18n.t('view.list.kb.complete'), callback_data: 'complete_user' },
+          { text: this.ctx.i18n.t('view.list.kb.leave'), callback_data: 'leave_user' }
+        ],
         [{ text: this.ctx.i18n.t('view.list.kb.options'), callback_data: 'manage_list' }],
       ],
     };

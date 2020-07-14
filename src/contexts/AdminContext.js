@@ -16,6 +16,7 @@ class AdminContext {
     bot.action('remove_associate', (ctx) => this.actionRemoveAssociate(ctx));
     bot.action(/^manage_lock/, (ctx) => this.actionMenuLock(ctx));
     bot.action(/^manage_complete/, (ctx) => this.actionCompleteUser(ctx));
+    bot.action(/^manage_leave/, (ctx) => this.actionLeaveUser(ctx));
     return bot;
   }
 
@@ -188,7 +189,37 @@ class AdminContext {
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       const index = list.ListUsers.findIndex((value) => value.userId === userId);
       if (index >= 0) {
-        list.ListUsers[index].finished = true; // Mark complete
+        list.ListUsers[index].state = 1; // Mark complete
+        await list.ListUsers[index].save(); // Async save in database
+        ctx.i18n.locale(list.language);
+        try {
+          await new AdminView(ctx, list).sendUserList(true);
+          await new ListView(ctx, list, true).send(true);
+          await new NotificationView(ctx, list).send();
+        } catch (e) {
+          // Ignore...
+        }
+      }
+      await ctx.answerCbQuery().catch(() => {});
+    } else {
+      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+    }
+  }
+
+  /**
+   * Mark user as complete.
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  async actionLeaveUser(ctx) {
+    const listId = idParser(ctx.update.callback_query.message.text);
+    const userId = parseInt(urlParser(ctx.update.callback_query.data, 'forceId'), 10);
+    const list = await this.listQueries.getSingleFromId(listId);
+    if (list !== null && await this.getAdminUsers(ctx, list)) {
+      const index = list.ListUsers.findIndex((value) => value.userId === userId);
+      if (index >= 0) {
+        list.ListUsers[index].state = -1; // Mark leave
         await list.ListUsers[index].save(); // Async save in database
         ctx.i18n.locale(list.language);
         try {

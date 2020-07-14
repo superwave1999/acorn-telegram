@@ -24,7 +24,7 @@ class NotificationView {
     if (this.data.notification > 0 && this.data.ListUsers) {
       let order = 0;
       this.data.ListUsers.forEach((user) => {
-        if (!user.finished) {
+        if (user.state === 0) {
           order += 1;
           if (!user.notified && this.data.notification === order) {
             results.push(this.ctx.telegram.sendMessage(user.userId, this.renderNotification(), { parse_mode: 'Markdown' }));
