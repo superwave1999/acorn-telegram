@@ -20,12 +20,12 @@
     },
     "cancel": {
       "main": "Cancelado",
-      "none": "Lista ya cancelada"
+      "none": "Lista ya cancelada o enviada a grupo"
     }
   },
   "view": {
     "admin": {
-      "title": "🌰 *Menú de administración*",
+      "title": "🥬 *Menú de administración*",
       "island": "🏝️ _${island}_",
       "assoc": "Con usuario asociado",
       "kb": {
@@ -38,14 +38,14 @@
       }
     },
     "list": {
-      "title": "🌰 *Listado de nabos*",
+      "title": "🥬 *Listado de nabos*",
       "price": "💰 ${price}",
       "island": "🏝️ _${island}_",
       "users": {
-        "limit": "🧍 ¡Límite alcanzado!",
+        "limit": "🧍 ¡Límite de usuarios alcanzado!",
         "max": "🧍 Máximo: ${max}"
       },
-      "locked": "⚠️ *LISTA CERRADA*",
+      "locked": "⚠ *LISTA CERRADA*",
       "kb": {
         "add": "¡Voy!",
         "complete": "Terminé/No voy",
@@ -60,7 +60,7 @@
         "cancel": "Cancelar"
       }
     },
-    "notify": "🌰 *¡Calienta que sales!*",
+    "notify": "🥬 *¡Calienta que sales!*",
     "notifypin": "El dueño de la isla te mandará el PIN pronto"
   },
   "alert": {

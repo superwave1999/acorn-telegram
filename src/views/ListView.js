@@ -14,7 +14,7 @@ class ListView {
     output += `${this.ctx.i18n.t('view.list.title')}\n`;
     output += `${this.ctx.i18n.t('view.list.price', { price: this.data.price })}\n`;
     output += `${this.ctx.i18n.t('view.list.island', { island: this.data.island })}\n`;
-    if (this.data.countUsers > this.data.maxUsers) {
+    if (this.data.ListUsers && this.data.ListUsers.length >= this.data.maxUsers) {
       output += `${this.ctx.i18n.t('view.list.users.limit')}\n`;
     } else {
       output += `${this.ctx.i18n.t('view.list.users.max', { max: this.data.maxUsers })}\n`;

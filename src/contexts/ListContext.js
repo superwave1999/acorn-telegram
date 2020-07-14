@@ -266,11 +266,10 @@ class ListContext {
       if (list !== null) {
         if (!list.isClosed) {
           if (!list.ListUsers.some((value) => value.userId === ctx.from.id)) {
-            list.countUsers += 1;
-            if (list.countUsers <= list.maxUsers) {
+            const countUsers = list.ListUsers.length + 1;
+            if (countUsers <= list.maxUsers) {
               const created = await this.listQueries.createUser(list.id, ctx.from);
               if (created) {
-                await list.save(); // Save new user count
                 list.ListUsers.push(created);
                 ctx.i18n.locale(list.language);
                 try {

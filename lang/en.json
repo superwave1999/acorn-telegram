@@ -20,12 +20,12 @@
     },
     "cancel": {
       "main": "Cancelled!",
-      "none": "Nothing to cancel!"
+      "none": "List already cancelled or sent to group!"
     }
   },
   "view": {
     "admin": {
-      "title": "🌰 *Administration menu*",
+      "title": "🥬 *Administration menu*",
       "island": "🏝️ _${island}_",
       "assoc": "With associate",
       "kb": {
@@ -38,14 +38,14 @@
       }
     },
     "list": {
-      "title": "🌰 *Trade listing*",
+      "title": "🥬 *Trade listing*",
       "price": "💰 ${price}",
       "island": "🏝️ _${island}_",
       "users": {
-        "limit": "🧍 Limit reached!",
+        "limit": "🧍 User limit reached!",
         "max": "🧍 Max: ${max}"
       },
-      "locked": "⚠️ *LISTING LOCKED*",
+      "locked": "⚠ *LISTING LOCKED*",
       "kb": {
         "add": "I'm going",
         "complete": "Done",
@@ -60,7 +60,7 @@
         "cancel": "Cancel"
       }
     },
-    "notify": "🌰 *Its your turn soon!*",
+    "notify": "🥬 *Its your turn soon!*",
     "notifypin": "The island owner will send you the PIN shortly"
   },
   "alert": {

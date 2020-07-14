@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       price: DataTypes.INTEGER(4).UNSIGNED,
       notification: DataTypes.INTEGER(4).UNSIGNED,
       maxUsers: DataTypes.INTEGER(4).UNSIGNED,
-      countUsers: DataTypes.INTEGER(4).UNSIGNED,
       state: DataTypes.INTEGER(1).UNSIGNED,
       isClosed: DataTypes.BOOLEAN,
     },
