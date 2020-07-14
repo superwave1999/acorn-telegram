@@ -277,7 +277,7 @@ class ListContext {
                 } catch (e) {
                   // Ignore...
                 }
-                await ctx.answerCbQuery().catch(() => {});
+                await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.joined')).catch(() => {});
               } else {
                 await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch(() => {});
               }
@@ -321,7 +321,7 @@ class ListContext {
           } catch (e) {
             // Ignore...
           }
-          await ctx.answerCbQuery().catch(() => {});
+          await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.removed')).catch(() => {});
         } else {
           await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {});
         }

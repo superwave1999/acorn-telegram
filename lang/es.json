@@ -15,7 +15,7 @@
       "island": "(1/3) ¡Envíame el nombre de tu isla!",
       "price": "(2/3) Envíame el precio",
       "users": "Escriba el número máximo de usuarios (inclusive)",
-      "notification": "Deme el márgen de notificación\n(ej: 4 - Se notificará al cuarto usuario de la lista por privado).\n 0 desactiva",
+      "notification": "Deme el márgen de notificación\n(ej: 4 - Se notificará al cuarto usuario de la cola por privado).\n 0 desactiva",
       "contact": "*${u}* asociado"
     },
     "cancel": {
@@ -48,7 +48,7 @@
       "locked": "⚠ *LISTA CERRADA*",
       "kb": {
         "add": "¡Voy!",
-        "complete": "Terminé/No voy",
+        "complete": "✅ Ya he ido",
         "options": "Menú admin"
       }
     },
@@ -64,14 +64,20 @@
     "notifypin": "El dueño de la isla te mandará el PIN pronto"
   },
   "alert": {
+    "msg": {
+      "list": {
+        "joined": "Has entrado en la cola.",
+        "removed": "Te has salido de la cola."
+      }
+    },
     "err": {
       "list": {
-        "invalid": "Lista expirada.",
-        "closed": "Lista cerrada.",
-        "add": "Ya estás, o has estado, en la lista.",
+        "invalid": "Cola expirada.",
+        "closed": "Cola cerrada.",
+        "add": "Ya estás en la cola.",
         "limit": "Límite de usuarios alcanzado.",
-        "remove": "No te he encontrado, o ya has estado, en la lista.",
-        "create": "Por algún motivo, no pude añadirte a la lista."
+        "remove": "Ya te has dado de baja de la cola.",
+        "create": "Por algún motivo, no pude añadirte a la cola."
       }
     }
   },

@@ -48,7 +48,7 @@
       "locked": "⚠ *LISTING LOCKED*",
       "kb": {
         "add": "I'm going",
-        "complete": "Done",
+        "complete": "✅ Done",
         "options": "Options"
       }
     },
@@ -64,14 +64,20 @@
     "notifypin": "The island owner will send you the PIN shortly"
   },
   "alert": {
+    "msg": {
+      "list": {
+        "joined": "You joined the queue.",
+        "removed": "You left the queue."
+      }
+    },
     "err": {
       "list": {
-        "invalid": "List expired.",
-        "closed": "List closed.",
-        "add": "You already are, or have been, on the list.",
+        "invalid": "Queue expired.",
+        "closed": "Queue closed.",
+        "add": "You are already in the queue.",
         "limit": "User limit reached.",
-        "remove": "I haven't found you on the list. You might have also been on it.",
-        "create": "For some reason, I couldn't add you to the list."
+        "remove": "You already left the queue.",
+        "create": "For some reason, I couldn't add you to the queue."
       }
     }
   },
