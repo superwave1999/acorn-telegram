@@ -1,8 +1,9 @@
 class CleanupRepository {
   constructor(db) {
     this.db = db;
+    const daysToDelete = process.env.DAYS_CLEANUP || 7;
     const d = new Date();
-    d.setMonth(d.getMonth() - 1);
+    d.setDate(d.getDate() - daysToDelete);
     this.time = d.toISOString().slice(0, 19).replace('T', ' ');
   }
 
