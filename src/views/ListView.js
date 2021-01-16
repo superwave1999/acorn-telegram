@@ -66,13 +66,8 @@ class ListView {
     };
   }
 
-  /**
-   * Send it.
-   * @param update
-   * @param newData
-   */
   send(update = false, newData = null) {
-    let message = null;
+    let message;
     if (newData) {
       this.data = newData;
     }

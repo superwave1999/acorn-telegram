@@ -6,22 +6,24 @@ class PreviewView extends ListView {
    * @param update
    * @param newData
    */
-  async sendPreview(update = false, newData = null) {
+  sendPreview(update = false, newData = null) {
+    let message;
     if (newData) {
       this.data = newData;
     }
     const markup = this.markupPreview();
     if (update) {
-      await this.ctx.editMessageText(this.render(), {
+      message = this.ctx.editMessageText(this.render(), {
         parse_mode: 'Markdown',
         reply_markup: markup,
       }).catch();
     } else {
-      await this.ctx.reply(this.render(), {
+      message = this.ctx.reply(this.render(), {
         parse_mode: 'Markdown',
         reply_markup: markup,
       });
     }
+    return message;
   }
 
   /**

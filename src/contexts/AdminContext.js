@@ -38,75 +38,82 @@ class AdminContext {
   /**
    * Load admin menu. Sends it to private chat. Can also accept update parameter.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async loadMenu(ctx) {
+    const response = [];
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
     const list = await this.listQueries.getSingleFromChat(chatId, messageId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).send(true);
+        response.push(await new AdminView(ctx, list).send(true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Refresh admin menu.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async loadMenuRefresh(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).send(true, true);
+        response.push(new AdminView(ctx, list).send(true, true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * User keyboard
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async userMenu(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).sendUserList(true);
+        response.push(new AdminView(ctx, list).sendUserList(true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Set language
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async setLanguage(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
@@ -114,24 +121,26 @@ class AdminContext {
       await list.save();
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).send(true, true);
-        await new ListView(ctx, list, true).send(true);
+        response.push(new AdminView(ctx, list).send(true, true));
+        response.push(new ListView(ctx, list, true).send(true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Remove associate.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionRemoveAssociate(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const list = await this.listQueries.getSingleFromId(listId);
     if (list !== null && await this.getAdminUsers(ctx, list)) {
@@ -139,24 +148,26 @@ class AdminContext {
       await list.save();
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).send(true, true);
-        await new ListView(ctx, list, true).send(true);
+        response.push(new AdminView(ctx, list).send(true, true));
+        response.push(new ListView(ctx, list, true).send(true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Management menu. Lock or unlock the list.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionMenuLock(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const setClosed = parseInt(urlParser(ctx.update.callback_query.data, 'state') || '1', 10);
     const list = await this.listQueries.getSingleFromId(listId);
@@ -165,24 +176,26 @@ class AdminContext {
       await list.save();
       ctx.i18n.locale(list.language);
       try {
-        await new AdminView(ctx, list).send(true, true);
-        await new ListView(ctx, list, true).send(true);
+        response.push(new AdminView(ctx, list).send(true, true));
+        response.push(new ListView(ctx, list, true).send(true));
       } catch (e) {
         // Ignore...
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Mark user as complete.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionCompleteUser(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const userId = parseInt(urlParser(ctx.update.callback_query.data, 'forceId'), 10);
     const list = await this.listQueries.getSingleFromId(listId);
@@ -193,26 +206,28 @@ class AdminContext {
         await list.ListUsers[index].save(); // Async save in database
         ctx.i18n.locale(list.language);
         try {
-          await new AdminView(ctx, list).sendUserList(true);
-          await new ListView(ctx, list, true).send(true);
-          await new NotificationView(ctx, list).send();
+          response.push(new AdminView(ctx, list).sendUserList(true));
+          response.push(new ListView(ctx, list, true).send(true));
+          response.push(new NotificationView(ctx, list).send());
         } catch (e) {
           // Ignore...
         }
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Mark user as complete.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionLeaveUser(ctx) {
+    const response = [];
     const listId = idParser(ctx.update.callback_query.message.text);
     const userId = parseInt(urlParser(ctx.update.callback_query.data, 'forceId'), 10);
     const list = await this.listQueries.getSingleFromId(listId);
@@ -223,18 +238,19 @@ class AdminContext {
         await list.ListUsers[index].save(); // Async save in database
         ctx.i18n.locale(list.language);
         try {
-          await new AdminView(ctx, list).sendUserList(true);
-          await new ListView(ctx, list, true).send(true);
-          await new NotificationView(ctx, list).send();
+          response.push(new AdminView(ctx, list).sendUserList(true));
+          response.push(new ListView(ctx, list, true).send(true));
+          response.push(new NotificationView(ctx, list).send());
         } catch (e) {
           // Ignore...
         }
       }
-      await ctx.answerCbQuery().catch(() => {});
+      response.push(ctx.answerCbQuery().catch(() => {}));
     } else {
-      await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
-      await ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {});
+      response.push(ctx.deleteMessage(ctx.update.callback_query.message.message_id));
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nopermission'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 }
 

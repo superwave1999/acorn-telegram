@@ -18,7 +18,7 @@ class NotificationView {
   /**
    * Send the notification.
    */
-  async send() {
+  send() {
     const results = [];
     const saves = [];
     if (this.data.notification > 0 && this.data.ListUsers) {
@@ -34,8 +34,7 @@ class NotificationView {
         }
       });
     }
-    await Promise.all(results);
-    await Promise.all(saves);
+    return Promise.all(results + saves);
   }
 }
 

@@ -35,37 +35,41 @@ class ListContext {
    * @param ctx
    */
   async messageHandler(ctx) {
+    const response = [];
     if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup') {
       if (ctx.message.text === `@${this.USERNAME} get`) {
-        await this.convertCommand(ctx);
+        response.push(this.convertCommand(ctx));
       }
     } else {
       const list = await this.queries.getSingleFromUserId(ctx.from.id);
       if (list == null) {
-        ctx.reply(ctx.i18n.t('list.err.create'));
+        response.push(ctx.reply(ctx.i18n.t('list.err.create')));
       } else {
-        await this.handleMessageState(list, ctx);
+        response.push(this.handleMessageState(list, ctx));
       }
     }
+    return Promise.all(response);
   }
 
   /**
    * Handles contact shares.
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async contactHandler(ctx) {
+    const response = [];
     if (ctx.chat.type === 'private') {
       const list = await this.queries.getSingleFromUserId(ctx.from.id);
       if (list == null) {
-        ctx.reply(ctx.i18n.t('list.err.create'));
+        response.push(ctx.reply(ctx.i18n.t('list.err.create')));
       } else {
         list.associateId = ctx.update.message.contact.user_id;
         await list.save();
-        await ctx.reply(ctx.i18n.t('list.state.contact', { u: ctx.update.message.contact.first_name }), {
+        response.push(ctx.reply(ctx.i18n.t('list.state.contact', { u: ctx.update.message.contact.first_name }), {
           parse_mode: 'markdown',
-        });
+        }));
       }
     }
+    return Promise.all(response);
   }
 
   /**
@@ -73,6 +77,7 @@ class ListContext {
    * @param ctx
    */
   async baseCommand(ctx) {
+    const response = [];
     if (ctx.chat.type === 'private') {
       const existing = await this.queries.getSingleFromUserId(ctx.from.id);
       if (existing) {
@@ -81,9 +86,10 @@ class ListContext {
       const created = await this.queries.createList(ctx);
       if (created) {
         await created.reload();
-        await this.sendStateMessage(created, ctx);
+        response.push(this.sendStateMessage(created, ctx));
       }
     }
+    return Promise.all(response);
   }
 
   /**
@@ -93,26 +99,28 @@ class ListContext {
    * @returns {null}
    */
   async sendStateMessage(q, ctx) {
+    const response = [];
     ctx.i18n.locale(q.language);
     switch (q.state) {
       case this.STATE_ISLAND:
-        await ctx.reply(ctx.i18n.t('list.state.island'));
+        response.push(ctx.reply(ctx.i18n.t('list.state.island')));
         break;
       case this.STATE_PRICE:
-        await ctx.reply(ctx.i18n.t('list.state.price'));
+        response.push(ctx.reply(ctx.i18n.t('list.state.price')));
         break;
       case this.STATE_READY:
-        await new Preview(ctx, q).sendPreview();
+        response.push(new Preview(ctx, q).sendPreview());
         break;
       case this.STATE_MAX_USERS:
-        await ctx.reply(ctx.i18n.t('list.state.users'));
+        response.push(ctx.reply(ctx.i18n.t('list.state.users')));
         break;
       case this.STATE_SET_NOTIFICATION:
-        await ctx.reply(ctx.i18n.t('list.state.notification'));
+        response.push(ctx.reply(ctx.i18n.t('list.state.notification')));
         break;
       default:
         break;
     }
+    return Promise.all(response);
   }
 
   /**
@@ -121,6 +129,7 @@ class ListContext {
    * @param ctx
    */
   async handleMessageState(q, ctx) {
+    const response = [];
     ctx.i18n.locale(q.language);
     const expectedMessage = ctx.message.text;
     switch (q.state) {
@@ -129,9 +138,9 @@ class ListContext {
           q.island = expectedMessage;
           q.state = this.STATE_PRICE;
           await q.save();
-          await this.sendStateMessage(q, ctx);
+          response.push(this.sendStateMessage(q, ctx));
         } else {
-          await ctx.reply(ctx.i18n.t('list.err.island'));
+          response.push(ctx.reply(ctx.i18n.t('list.err.island')));
         }
         break;
       case this.STATE_PRICE:
@@ -141,12 +150,12 @@ class ListContext {
             q.price = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            await this.sendStateMessage(q, ctx);
+            response.push(this.sendStateMessage(q, ctx));
           } else {
-            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            response.push(ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' }));
           }
         } else {
-          await ctx.reply(ctx.i18n.t('list.err.number'));
+          response.push(ctx.reply(ctx.i18n.t('list.err.number')));
         }
         break;
       case this.STATE_MAX_USERS:
@@ -156,12 +165,12 @@ class ListContext {
             q.maxUsers = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            await this.sendStateMessage(q, ctx);
+            response.push(this.sendStateMessage(q, ctx));
           } else {
-            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            response.push(ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' }));
           }
         } else {
-          await ctx.reply(ctx.i18n.t('list.err.number'));
+          response.push(ctx.reply(ctx.i18n.t('list.err.number')));
         }
         break;
       case this.STATE_SET_NOTIFICATION:
@@ -171,17 +180,18 @@ class ListContext {
             q.notification = expectedMessage;
             q.state = this.STATE_READY;
             await q.save();
-            await this.sendStateMessage(q, ctx);
+            response.push(this.sendStateMessage(q, ctx));
           } else {
-            await ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' });
+            response.push(ctx.reply(ctx.i18n.t('list.err.numbermin', { n: max }), { parse_mode: 'Markdown' }));
           }
         } else {
-          await ctx.reply(ctx.i18n.t('list.err.number'));
+          response.push(ctx.reply(ctx.i18n.t('list.err.number')));
         }
         break;
       default:
         break;
     }
+    return Promise.all(response);
   }
 
   /**
@@ -189,15 +199,17 @@ class ListContext {
    * @param ctx
    */
   async actionSetMaxUsers(ctx) {
+    const response = [];
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      await ctx.reply(ctx.i18n.t('list.err.create'));
+      response.push(ctx.reply(ctx.i18n.t('list.err.create')));
     } else {
       list.state = this.STATE_MAX_USERS;
       await list.save();
-      this.sendStateMessage(list, ctx);
+      response.push(this.sendStateMessage(list, ctx));
     }
-    await ctx.answerCbQuery().catch(() => {});
+    response.push(ctx.answerCbQuery().catch(() => {}));
+    return Promise.all(response);
   }
 
   /**
@@ -205,15 +217,17 @@ class ListContext {
    * @param ctx
    */
   async actionSetNotification(ctx) {
+    const response = [];
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list == null) {
-      await ctx.reply(ctx.i18n.t('list.err.create'));
+      response.push(ctx.reply(ctx.i18n.t('list.err.create')));
     } else {
       list.state = this.STATE_SET_NOTIFICATION;
       await list.save();
-      this.sendStateMessage(list, ctx);
+      response.push(this.sendStateMessage(list, ctx));
     }
-    await ctx.answerCbQuery().catch(() => {});
+    response.push(ctx.answerCbQuery().catch(() => {}));
+    return Promise.all(response);
   }
 
   /**
@@ -221,15 +235,17 @@ class ListContext {
    * @param ctx
    */
   async actionCancel(ctx) {
+    const response = [];
     const list = await this.queries.getSingleFromUserId(ctx.from.id);
     if (list !== null) {
-      await ctx.i18n.locale(list.language);
+      ctx.i18n.locale(list.language);
       await list.destroy();
-      await ctx.reply(ctx.i18n.t('list.cancel.main'));
+      response.push(ctx.reply(ctx.i18n.t('list.cancel.main')));
     } else {
-      await ctx.reply(ctx.i18n.t('list.cancel.none'));
+      response.push(ctx.reply(ctx.i18n.t('list.cancel.none')));
     }
-    await ctx.answerCbQuery().catch(() => {});
+    response.push(ctx.answerCbQuery().catch(() => {}));
+    return Promise.all(response);
   }
 
   /**
@@ -237,8 +253,9 @@ class ListContext {
    * @param ctx
    */
   async convertCommand(ctx) {
+    const response = [];
     try {
-      await ctx.deleteMessage(ctx.message.message_id);
+      response.push(ctx.deleteMessage(ctx.message.message_id));
     } catch (e) {
       // Not admin of group
     }
@@ -252,15 +269,17 @@ class ListContext {
         await list.save();
       }
     }
+    return Promise.all(response);
   }
 
   /**
    * Add user to list. Only if list exists and not already on.
    * Only allows users with @username. Else notifies via private.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionAddUser(ctx) {
+    const response = [];
     if (ctx.from.username && ctx.from.username.length > 0) {
       const chatId = ctx.chat.id;
       const messageId = ctx.update.callback_query.message.message_id;
@@ -275,37 +294,39 @@ class ListContext {
                 list.ListUsers.push(created);
                 ctx.i18n.locale(list.language);
                 try {
-                  await new ListView(ctx, list).send(true);
+                  response.push(new ListView(ctx, list).send(true));
                 } catch (e) {
                   // Ignore...
                 }
-                await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.joined')).catch(() => {});
+                response.push(ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.joined')).catch(() => {}));
               } else {
-                await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch(() => {});
+                response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.create'), true).catch(() => {}));
               }
             } else {
-              await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.limit'), true).catch(() => {});
+              response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.limit'), true).catch(() => {}));
             }
           } else {
-            await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true).catch(() => {});
+            response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.add'), true).catch(() => {}));
           }
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
+          response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {}));
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
+        response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {}));
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('nousername'), true).catch(() => {});
+      response.push(ctx.answerCbQuery(ctx.i18n.t('nousername'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Mark user as complete.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionCompleteUser(ctx) {
+    const response = [];
     const userId = ctx.from.id;
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
@@ -318,29 +339,31 @@ class ListContext {
           await list.ListUsers[index].save();
           ctx.i18n.locale(list.language);
           try {
-            await new ListView(ctx, list).send(true);
-            await new NotificationView(ctx, list).send();
+            response.push(new ListView(ctx, list).send(true));
+            response.push(new NotificationView(ctx, list).send());
           } catch (e) {
             // Ignore...
           }
-          await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.completed')).catch(() => {});
+          response.push(ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.completed')).catch(() => {}));
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {});
+          response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {}));
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
+        response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {}));
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
+      response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 
   /**
    * Mark user as not going.
    * @param ctx
-   * @returns {Promise<void>}
+   * @returns {Promise<unknown[]>}
    */
   async actionLeaveUser(ctx) {
+    const response = [];
     const userId = ctx.from.id;
     const chatId = ctx.chat.id;
     const messageId = ctx.update.callback_query.message.message_id;
@@ -353,21 +376,22 @@ class ListContext {
           await list.ListUsers[index].save();
           ctx.i18n.locale(list.language);
           try {
-            await new ListView(ctx, list).send(true);
-            await new NotificationView(ctx, list).send();
+            response.push(new ListView(ctx, list).send(true));
+            response.push(new NotificationView(ctx, list).send());
           } catch (e) {
             // Ignore...
           }
-          await ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.removed')).catch(() => {});
+          response.push(ctx.answerCbQuery(ctx.i18n.t('alert.msg.list.removed')).catch(() => {}));
         } else {
-          await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {});
+          response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.remove'), true).catch(() => {}));
         }
       } else {
-        await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {});
+        response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.closed'), true).catch(() => {}));
       }
     } else {
-      await ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {});
+      response.push(ctx.answerCbQuery(ctx.i18n.t('alert.err.list.invalid'), true).catch(() => {}));
     }
+    return Promise.all(response);
   }
 }
 
