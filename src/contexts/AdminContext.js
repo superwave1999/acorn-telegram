@@ -2,7 +2,7 @@ const AdminView = require('../views/AdminView');
 const ListView = require('../views/ListView');
 const GeneralRepository = require('../database/queries/list');
 const NotificationView = require('../views/NotificationView');
-
+const toType = require('../helpers/toType');
 const idParser = require('../helpers/idParser');
 const urlParser = require('../helpers/urlParser');
 
@@ -29,7 +29,7 @@ class AdminContext {
     const userId = ctx.from.id;
     const arr = [list.creatorId, list.associateId];
     let isAdmin = (arr.indexOf(userId) !== -1);
-    if (!isAdmin && process.env.ADMIN_OPTIONS) {
+    if (!isAdmin && toType(process.env.ADMIN_OPTIONS, false)) {
       isAdmin = (await ctx.telegram.getChatMember(list.publicChatId, userId).status === ('creator' || 'administrator'));
     }
     return isAdmin;

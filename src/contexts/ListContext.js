@@ -3,6 +3,7 @@ const CreationRepository = require('../database/queries/creation');
 const ListView = require('../views/ListView');
 const NotificationView = require('../views/NotificationView');
 const GeneralRepository = require('../database/queries/list');
+const toType = require('../helpers/toType');
 
 class ListContext {
   constructor(bot, db) {
@@ -135,7 +136,7 @@ class ListContext {
         break;
       case this.STATE_PRICE:
         if (/^\d+$/.test(expectedMessage)) {
-          const max = Number(process.env.MAX_PRICE || 800);
+          const max = toType(process.env.MAX_PRICE, 800);
           if (Number(expectedMessage) <= max) {
             q.price = expectedMessage;
             q.state = this.STATE_READY;
@@ -150,7 +151,7 @@ class ListContext {
         break;
       case this.STATE_MAX_USERS:
         if (/^\d+$/.test(expectedMessage)) {
-          const max = Number(process.env.MAX_LIST_USERS || 100);
+          const max = toType(process.env.MAX_LIST_USERS, 100);
           if (Number(expectedMessage) <= max) {
             q.maxUsers = expectedMessage;
             q.state = this.STATE_READY;
@@ -165,7 +166,7 @@ class ListContext {
         break;
       case this.STATE_SET_NOTIFICATION:
         if (/^\d+$/.test(expectedMessage)) {
-          const max = Number(process.env.MAX_LIST_USERS || 100);
+          const max = toType(process.env.MAX_LIST_USERS, 100);
           if (Number(expectedMessage) <= max) {
             q.notification = expectedMessage;
             q.state = this.STATE_READY;

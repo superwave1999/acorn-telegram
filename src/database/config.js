@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+/**
+ * File used for database migrations from sequelize-cli.
+ */
 module.exports = {
   development: {
     username: process.env.DB_USER,
