@@ -25,7 +25,6 @@
     "node-cron": "^2.0.3",
     "normalize-type": "^1.5.2",
     "sequelize": "^5.22.3",
-    "sequelize-cli": "^5.5.1",
     "telegraf": "^3.38.0",
     "telegraf-i18n": "^6.6.0",
     "telegraf-ratelimit": "^2.0.0"
@@ -35,6 +34,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.8",
-    "lint-staged": "^10.5.3"
+    "lint-staged": "^10.5.3",
+    "sequelize-cli": "^5.5.1"
   }
 }
