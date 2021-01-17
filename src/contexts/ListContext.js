@@ -255,7 +255,7 @@ class ListContext {
   async convertCommand(ctx) {
     const response = [];
     try {
-      response.push(ctx.deleteMessage(ctx.message.message_id));
+      response.push(ctx.deleteMessage(ctx.message.message_id).catch(() => {}));
     } catch (e) {
       // Not admin of group
     }

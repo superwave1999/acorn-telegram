@@ -1,11 +1,14 @@
 class GeneralRepository {
   constructor(db) {
     this.db = db;
-    this.order = [['createdAt', 'DESC']];
+    this.order = [
+      ['createdAt', 'DESC'],
+      [{ model: this.db.ListUser }, 'id', 'ASC'],
+      [{ model: this.db.ListUser }, 'createdAt', 'ASC'],
+    ];
     this.include = [
       {
         model: this.db.ListUser,
-        order: [['createdAt', 'ASC']],
         required: false,
       },
     ];

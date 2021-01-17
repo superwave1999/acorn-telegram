@@ -6,16 +6,22 @@ const toType = require('../helpers/toType');
 const basename = path.basename(__filename);
 const db = {};
 const modelPath = `${__dirname}/models`;
+
+const connection = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  dialect: process.env.DB_DIALECT,
+};
+
+if (!toType(process.env.DB_LOGGING, false)) {
+  connection.logging = false;
+}
+
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
   process.env.DB_PASS,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
-    logging: toType(process.env.DB_LOGGING, false),
-  },
+  connection,
 );
 
 sequelize.authenticate().then(
